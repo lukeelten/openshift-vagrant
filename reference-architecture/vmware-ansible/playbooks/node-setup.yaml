@@ -10,7 +10,7 @@
       cloud-provider:
       - "vsphere"
       cloud-config:
-      - "/etc/vsphere/vsphere.conf"
+      - "/etc/origin/cloudprovider/vsphere.conf"
       node-labels:
       - "role={{ openshift_node_labels.role }}"
     openshift_master_debug_level: "{{ master_debug_level | default(debug_level, true) }}"

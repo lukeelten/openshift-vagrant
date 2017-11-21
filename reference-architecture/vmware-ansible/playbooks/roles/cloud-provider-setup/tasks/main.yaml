@@ -1,5 +1,5 @@
 ---
-- name: create /etc/vsphere/
+- name: create /etc/origin/cloudprovider
   file:
     state: directory
     path: "{{ vsphere_conf_dir }}"
@@ -7,7 +7,7 @@
 - name: create the vsphere.conf file
   template:
     src: "{{ role_path }}/templates/vsphere.conf.j2"
-    dest: /etc/vsphere/vsphere.conf
+    dest: /etc/origin/cloudprovider/vsphere.conf
     owner: root
     group: root
     mode: 0644

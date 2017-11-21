@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if mkdir ~/allinone.lock; then
+  echo "Locking succeeded" >&2
+else
+  echo "Lock failed - exit" >&2
+  exit 1
+fi
 export MYARGS=$@
 IFS=' ' read -r -a array <<< "$MYARGS"
 export RESOURCEGROUP=$1
@@ -555,8 +561,10 @@ cat > /home/${AUSERNAME}/setup-sso.yml <<EOF
          SSO_TRUSTSTORE=truststore.jks
          SSO_TRUSTSTORE_PASSWORD="{{idm_xpassword}}"
 
-  - name: Stage 10 - OCCREATE SECRET ADD
+  - name: Stage 12 - OCCREATE SECRET ADD
     command: oc new-app sso71-postgresql --param-file {{idm_dir}}/sso.params -l app=sso71-postgresql -l application=sso -l template=sso71-https
+  - name: Stage 13 - add xml pv
+    command: oc volume dc/sso --add --claim-size 512M --type=emptyDir --mount-path /opt/eap/standalone/configuration/standalone_xml_history --name standalone-xml-history
   - set_fact: sso_token_url="https://login.{{sso_domain}}/auth/realms/cloud/protocol/openid-connect/token"
   - name: Pause for app create
     pause:
@@ -672,6 +680,12 @@ parameters:
 EOF
 
 cat <<EOF > /home/${AUSERNAME}/openshift-install.sh
+if mkdir ~/openshift-install.lock; then
+  echo "Locking succeeded" >&2
+else
+  echo "Lock failed - exit" >&2
+  exit 1
+fi
 export ANSIBLE_HOST_KEY_CHECKING=False
 sleep 120
 ansible all --module-name=ping > ansible-preinstall-ping.out || true

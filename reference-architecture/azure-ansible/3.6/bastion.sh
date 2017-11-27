@@ -422,20 +422,6 @@ cat <<EOF >> /home/${AUSERNAME}/subscribe.yml
       name: docker
       enabled: yes
       state: started
-# BUG: add_host.sh.  adding new ndoes results in needing newer kernel for docker to work
-# so rebooting for now
-  - name: Restart host
-    block:
-    - name: Restart host
-      become: yes
-      shell: sleep 2 && /sbin/shutdown -r now "Ansible Reboot"
-      async: 0
-      poll: 0
-
-    - name: Wait for system to become reachable
-      wait_for_connection:
-        timeout: 300
-    when: docker_status|failed
 
   - name: Wait for Things to Settle
     pause: minutes=2
@@ -673,7 +659,7 @@ cat > /home/${AUSERNAME}/setup-sso.yml <<EOF
   - debug:
       msg: "Completed"
 EOF
-# JTH:
+
 cat > /home/${AUSERNAME}/add_host.sh <<EOF
 #!/bin/bash
 set -eo pipefail

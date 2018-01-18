@@ -7,5 +7,9 @@ insecure-flag = 1
 datacenter = {{ vcenter_datacenter }}
 datastore = {{ vcenter_datastore }}
 working-dir = /{{ vcenter_datacenter }}/vm/{{ vcenter_folder }}/
+
+[Network]
+public-network = "{{ vm_network }}" 
+
 [Disk]
 scsicontrollertype = pvscsi

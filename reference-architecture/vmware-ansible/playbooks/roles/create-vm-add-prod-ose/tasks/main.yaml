@@ -22,7 +22,7 @@
     template: "{{vcenter_template_name}}"
     state: poweredon
     wait_for_ip_address: True
-    folder: "/{{ vcenter_folder }}"
+    folder: "{{ vcenter_datacenter }}/vm/{{ vcenter_folder }}" 
     annotation: "{{ item.value.tag }}"
     hardware:
       memory_mb: "{{ app_memory }}"

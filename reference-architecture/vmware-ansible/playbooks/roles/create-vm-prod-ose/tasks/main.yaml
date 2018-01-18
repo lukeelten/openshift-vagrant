@@ -22,7 +22,7 @@
     template: "{{vcenter_template_name}}"
     state: poweredon
     wait_for_ip_address: true
-    folder: "/{{ vcenter_folder }}"
+    folder: "{{ vcenter_datacenter }}/vm/{{ vcenter_folder }}"
     annotation: "{{ item.value.tag }}"
     disk:
     - size_gb: 60
@@ -76,7 +76,7 @@
     - size_gb: 40
       datastore: "{{ vcenter_datastore }}"
       type: thin
-    folder: "/{{ vcenter_folder }}"
+    folder: "{{ vcenter_datacenter }}/vm/{{ vcenter_folder }}" 
     annotation: "{{ item.value.tag }}"
     hardware:
       memory_mb: 8192
@@ -117,7 +117,7 @@
     - size_gb: 40
       datastore: "{{ vcenter_datastore }}"
       type: thin
-    folder: "/{{ vcenter_folder }}"
+    folder: "{{ vcenter_datacenter }}/vm/{{ vcenter_folder }}" 
     annotation: "{{ item.value.tag }}"
     hardware:
       memory_mb: "{{ app_memory }}"

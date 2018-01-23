@@ -47,6 +47,8 @@
       yum: name={{item}} state=installed
       with_items:
         - "{{ openshift_deploy_packages_by_provider }}"
+    - name: "Install oVirt roles from Galaxy"
+      command: "ansible-galaxy install ovirt.ovirt-ansible-roles"
   when: "'rhv' in provider"
 
 - block:

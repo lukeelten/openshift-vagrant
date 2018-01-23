@@ -44,7 +44,7 @@ $ curl --output ca.pem 'http://engine.example.com/ovirt-engine/services/pki-reso
 ```
 
 ### RHEL QCOW2 Image
-The ovirt-ansible role, ovirt-image-template requires a URL to download a QCOW2 KVM image to use as
+The ovirt-ansible role, oVirt.image-template requires a URL to download a QCOW2 KVM image to use as
 the basis for the VMs on which OpenShift will be installed. If a CentOS image is desired, a suitable
 URL is commented out in the variable file, `playbooks/vars/ovirt-infra-vars.yaml`. If a RHEL image
 is preferred, log in at <https://access.redhat.com/>, navigate to Downloads, Red Hat Enterprise Linux,

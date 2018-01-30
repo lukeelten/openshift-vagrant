@@ -260,7 +260,20 @@ class VMWareAddNode(object):
                 self.inventory_file = "crs-inventory.json"
             if 'cns' in self.container_storage:
                 self.inventory_file = "cns-inventory.json"
-        required_vars = {'cluster_id':self.cluster_id, 'dns_zone':self.dns_zone, 'vcenter_host':self.vcenter_host, 'vcenter_password':self.vcenter_password, 'vm_ipaddr_start':self.vm_ipaddr_start, 'ldap_fqdn':self.ldap_fqdn, 'ldap_user_password':self.ldap_user_password, 'vm_dns':self.vm_dns, 'vm_gw':self.vm_gw, 'vm_netmask':self.vm_netmask, 'vcenter_datacenter':self.vcenter_datacenter}
+
+        required_vars = {
+            'cluster_id': self.cluster_id,
+            'dns_zone': self.dns_zone,
+            'vcenter_host': self.vcenter_host,
+            'vcenter_password': self.vcenter_password,
+            'vm_ipaddr_start': self.vm_ipaddr_start,
+            'ldap_fqdn': self.ldap_fqdn,
+            'ldap_user_password': self.ldap_user_password,
+            'vm_dns': self.vm_dns,
+            'vm_gw': self.vm_gw,
+            'vm_netmask': self.vm_netmask,
+            'vcenter_datacenter': self.vcenter_datacenter,
+        }
         for k, v in required_vars.items():
             if v == '':
                 err_count += 1

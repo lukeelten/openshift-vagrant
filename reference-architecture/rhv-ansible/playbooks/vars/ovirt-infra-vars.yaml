@@ -2,7 +2,7 @@
 ###########################
 # Common
 ###########################
-compatibility_version: 4.1
+compatibility_version: 4.2
 
 # Data center
 data_center_name: Default
@@ -56,12 +56,14 @@ vms:
     cloud_init:
       host_name: "openshift-node-0.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
+      root_password: "{{ root_password | default(omit) }}"
   - name: openshift-node-1
     tag: openshift_node
     profile: "{{ node_vm }}"
     cloud_init:
       host_name: "openshift-node-1.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
+      root_password: "{{ root_password | default(omit) }}"
 
   # Infra VMs
   - name: openshift-infra-0
@@ -70,12 +72,14 @@ vms:
     cloud_init:
       host_name: "openshift-infra-0.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
+      root_password: "{{ root_password | default(omit) }}"
   - name: openshift-infra-1
     tag: openshift_infra
     profile: "{{ node_vm }}"
     cloud_init:
       host_name: "openshift-infra-1.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
+      root_password: "{{ root_password | default(omit) }}"
 
   # Master VMs
   - name: openshift-master-0
@@ -84,18 +88,21 @@ vms:
     cloud_init:
       host_name: "openshift-master-0.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
+      root_password: "{{ root_password | default(omit) }}"
   - name: openshift-master-1
     tag: openshift_master
     profile: "{{ master_vm }}"
     cloud_init:
       host_name: "openshift-master-1.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
+      root_password: "{{ root_password | default(omit) }}"
   - name: openshift-master-2
     tag: openshift_master
     profile: "{{ master_vm }}"
     cloud_init:
       host_name: "openshift-master-2.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
+      root_password: "{{ root_password | default(omit) }}"
 
   # Load balancer
   - name: openshift-lb
@@ -104,6 +111,7 @@ vms:
     cloud_init:
       host_name: "openshift-lb.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
+      root_password: "{{ root_password | default(omit) }}"
 
 affinity_groups:
   - name: masters_ag

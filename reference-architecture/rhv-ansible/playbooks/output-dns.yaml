@@ -32,7 +32,7 @@
     - name: Create NSUPDATE reverse pointer entries
       lineinfile:
         path: ../inventory.nsupdate
-        line: "update add {{ '.'.join(hostvars[item]['devices']['eth0'].0.split('.')[::-1]) }}.in-addr.arpa 86400 PTR  {{ item }}.{{public_hosted_zone}}"
+        line: "update add {{ '.'.join(hostvars[item]['devices']['eth0'].0.split('.')[::-1]) }}.in-addr.arpa 86400 PTR  {{ item }}"
         state: present
       with_items:
         - "{{ groups['tag_openshift_master'] }}"
@@ -63,7 +63,7 @@
     - name: Create NSUPDATE host A entries
       lineinfile:
         path: ../inventory.nsupdate
-        line: "update add {{ item }}.{{public_hosted_zone}} 86400 A {{hostvars[item]['devices']['eth0'].0}}"
+        line: "update add {{ item }} 86400 A {{hostvars[item]['devices']['eth0'].0}}"
         state: present
       with_items:
         - "{{ groups['tag_openshift_master'] }}"
@@ -81,12 +81,12 @@
     - name: Create HOSTS public hostname
       lineinfile:
         path: ../inventory.hosts
-        line: "{{lb_ip}} {{lb_host}}.{{public_hosted_zone}} {{lb_host}} {{openshift_master_cluster_public_hostname}}"
+        line: "{{lb_ip}} {{lb_host}} {{openshift_master_cluster_public_hostname}}"
         state: present
     - name: Create HOSTS node entries
       lineinfile:
         path: ../inventory.hosts
-        line: "{{hostvars[item]['devices']['eth0'].0}} {{ item }}.{{ public_hosted_zone }} {{ item }}"
+        line: "{{hostvars[item]['devices']['eth0'].0}} {{ item }}"
       with_items:
         - "{{ groups['tag_openshift_master'] }}"
         - "{{ groups['tag_openshift_infra'] }}"

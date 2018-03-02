@@ -2,7 +2,7 @@
 ###########################
 # Common
 ###########################
-compatibility_version: 4.1
+compatibility_version: 4.2
 
 # Data center
 data_center_name: Default
@@ -50,60 +50,68 @@ node_vm:
 
 vms:
   # Node VMs
-  - name: openshift-node-0
+  - name: "openshift-node-0.{{ public_hosted_zone }}"
     tag: openshift_node
     profile: "{{ node_vm }}"
     cloud_init:
       host_name: "openshift-node-0.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-  - name: openshift-node-1
+      root_password: "{{ root_password | default(omit) }}"
+  - name: "openshift-node-1.{{ public_hosted_zone }}"
     tag: openshift_node
     profile: "{{ node_vm }}"
     cloud_init:
       host_name: "openshift-node-1.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
+      root_password: "{{ root_password | default(omit) }}"
 
   # Infra VMs
-  - name: openshift-infra-0
+  - name: "openshift-infra-0.{{ public_hosted_zone }}"
     tag: openshift_infra
     profile: "{{ node_vm }}"
     cloud_init:
       host_name: "openshift-infra-0.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-  - name: openshift-infra-1
+      root_password: "{{ root_password | default(omit) }}"
+  - name: "openshift-infra-1.{{ public_hosted_zone }}"
     tag: openshift_infra
     profile: "{{ node_vm }}"
     cloud_init:
       host_name: "openshift-infra-1.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
+      root_password: "{{ root_password | default(omit) }}"
 
   # Master VMs
-  - name: openshift-master-0
+  - name: "openshift-master-0.{{ public_hosted_zone }}"
     profile: "{{ master_vm }}"
     tag: openshift_master
     cloud_init:
       host_name: "openshift-master-0.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-  - name: openshift-master-1
+      root_password: "{{ root_password | default(omit) }}"
+  - name: "openshift-master-1.{{ public_hosted_zone }}"
     tag: openshift_master
     profile: "{{ master_vm }}"
     cloud_init:
       host_name: "openshift-master-1.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-  - name: openshift-master-2
+      root_password: "{{ root_password | default(omit) }}"
+  - name: "openshift-master-2.{{ public_hosted_zone }}"
     tag: openshift_master
     profile: "{{ master_vm }}"
     cloud_init:
       host_name: "openshift-master-2.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
+      root_password: "{{ root_password | default(omit) }}"
 
   # Load balancer
-  - name: openshift-lb
+  - name: "openshift-lb.{{ public_hosted_zone }}"
     tag: openshift_lb
     profile: "{{ node_vm }}"
     cloud_init:
       host_name: "openshift-lb.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
+      root_password: "{{ root_password | default(omit) }}"
 
 affinity_groups:
   - name: masters_ag
@@ -111,18 +119,18 @@ affinity_groups:
     vm_enforcing: false
     vm_rule: negative
     vms:
-      - openshift-master-0
-      - openshift-master-1
-      - openshift-master-2
+      - "openshift-master-0.{{ public_hosted_zone }}"
+      - "openshift-master-1.{{ public_hosted_zone }}"
+      - "openshift-master-2.{{ public_hosted_zone }}"
     wait: true
   - name: infra_ag
     cluster: "{{ rhv_cluster }}"
     vm_enforcing: false
     vm_rule: negative
     vms:
-      - openshift-infra-0
-      - openshift-infra-1
-      - openshift-lb
+      - "openshift-infra-0.{{ public_hosted_zone }}"
+      - "openshift-infra-1.{{ public_hosted_zone }}"
+      - "openshift-lb.{{ public_hosted_zone }}"
     wait: true
 
   - name: app_ag
@@ -130,6 +138,6 @@ affinity_groups:
     vm_enforcing: false
     vm_rule: negative
     vms:
-      - openshift-node-0
-      - openshift-node-1
+      - "openshift-node-0.{{ public_hosted_zone }}"
+      - "openshift-node-1.{{ public_hosted_zone }}"
 ...

@@ -62,7 +62,7 @@ root_ssh_key:
 ### Openshift variables
 ## Choices of deployment type: openshift-enterprise, origin
 deployment_type: openshift-enterprise
-openshift_vers: v3_6
+openshift_vers: v3_7
 containerized: false
 console_port: 8443
 

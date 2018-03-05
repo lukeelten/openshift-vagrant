@@ -1,15 +1,15 @@
 [Global]
-user = "{{ vcenter_username }}"
-password = "{{ vcenter_password }}"
-server = "{{ vcenter_host }}" 
+user = "{{ openshift_cloudprovider_vsphere_username }}"
+password = "{{ openshift_cloudprovider_vsphere_password }}"
+server = "{{ openshift_cloudprovider_vsphere_host }}"
 port = 443
 insecure-flag = 1
-datacenter = {{ vcenter_datacenter }}
-datastore = {{ vcenter_datastore }}
-working-dir = /{{ vcenter_datacenter }}/vm/{{ vcenter_folder }}/
-
-[Network]
-public-network = "{{ vm_network }}" 
-
+datacenter = {{ openshift_cloudprovider_vsphere_datacenter }}
+datastore = {{ openshift_cloudprovider_vsphere_datastore }}
+{% if openshift_cloudprovider_vsphere_folder is defined %}
+working-dir = /{{ openshift_cloudprovider_vsphere_datacenter }}/vm/{{ openshift_cloudprovider_vsphere_folder }}/
+{% else %}
+working-dir = /{{ openshift_cloudprovider_vsphere_datacenter }}/vm/
+{% endif %}
 [Disk]
 scsicontrollertype = pvscsi

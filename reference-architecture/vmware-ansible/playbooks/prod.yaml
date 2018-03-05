@@ -1,12 +1,13 @@
 ---
-- hosts: localhost
+- name: fulfill OSE3 prerequisites on production hosts roles
+  hosts: localhost
   vars_files:
     - vars/main.yaml
   roles:
     - create-vm-prod-ose
 
 - name: fulfill OSE3 prerequisites on production hosts roles
-  hosts: production_group
+  hosts: nodes 
   vars_files:
     - vars/main.yaml
   roles:

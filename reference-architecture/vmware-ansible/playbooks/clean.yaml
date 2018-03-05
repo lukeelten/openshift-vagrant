@@ -1,12 +1,5 @@
 ---
-- hosts: localhost
-  ignore_errors: yes
-  vars_files:
-    - vars/main.yaml
-  roles:
-    - instance-groups
-
-- hosts: allnodes
+- hosts: nodes
   ignore_errors: yes
   vars_files:
     - vars/main.yaml
@@ -22,41 +15,41 @@
   tasks:
     - name: Delete all added VMs
       vmware_guest:
-        hostname: "{{ vcenter_host }}"
-        username: "{{ vcenter_username }}"
-        password: "{{ vcenter_password }}"
+        hostname: "{{ openshift_cloudprovider_vsphere_host }}"
+        username: "{{ openshift_cloudprovider_vsphere_username }}"
+        password: "{{ openshift_cloudprovider_vsphere_password }}"
         validate_certs: False
         name: "{{ hostvars[item].inventory_hostname }}"
-        datacenter: "{{ vcenter_datacenter }}"
-        folder: "{{ vcenter_datacenter }}/vm/{{ vcenter_folder }}"
+        datacenter: "{{ openshift_cloudprovider_vsphere_datacenter }}"
+        folder: "{{ openshift_cloudprovider_vsphere_datacenter }}/vm/{{ openshift_cloudprovider_vsphere_folder }}"
         state: absent
         force: true
-      with_items: "{{ groups['allnodes'] }}"
+      with_items: "{{ groups['nodes'] }}"
 
-- hosts: localhost
-  user: root
-  become: false
-  ignore_errors: yes
-  vars_files:
-    - vars/main.yaml
-  tasks:
-    - name: "Remove resource pool on vCenter"
-      vmware_resource_pool:
-        hostname: "{{ vcenter_host }}"
-        username: "{{ vcenter_username }}"
-        password: "{{ vcenter_password }}"
-        validate_certs: False
-        datacenter: "{{ vcenter_datacenter }}"
-        cluster: "{{ vcenter_cluster}}"
-        resource_pool: "{{ vcenter_resource_pool }}"
-        state: "absent"
-    - name: "Remove folder on vCenter"
-      vmware_folder:
-        hostname: "{{ vcenter_host }}"
-        username: "{{ vcenter_username }}"
-        password: "{{ vcenter_password }}"
-        validate_certs: False
-        datacenter: "{{ vcenter_datacenter }}"
-        cluster: "{{ vcenter_cluster}}"
-        folder: "{{ vcenter_folder }}"
-        state: "absent"
+#- hosts: localhost
+#  user: root
+#  become: false
+#  ignore_errors: yes
+ # vars_files:
+  #  - vars/main.yaml
+  #tasks:
+  #  - name: "Remove resource pool on vCenter"
+  #    vmware_resource_pool:
+  #      hostname: "{{ openshift_cloudprovider_vsphere_host }}"
+  #      username: "{{ openshift_cloudprovider_vsphere_username }}"
+  #      password: "{{ openshift_cloudprovider_vsphere_password }}"
+  #      validate_certs: False
+  #      datacenter: "{{ openshift_cloudprovider_vsphere_datacenter }}"
+  #      cluster: "{{ openshift_cloudprovider_vsphere_cluster }}"
+  #      resource_pool: "{{ openshift_cloudprovider_vsphere_resource_pool }}"
+  #      state: "absent"
+  #  - name: "Remove folder on vCenter"
+  #    vmware_folder:
+  #      hostname: "{{ openshift_cloudprovider_vsphere_host }}"
+  #      username: "{{ openshift_cloudprovider_vsphere_username }}"
+  #      password: "{{ openshift_cloudprovider_vsphere_password }}"
+  #      validate_certs: False
+  #      datacenter: "{{ openshift_cloudprovider_vsphere_datacenter }}"
+  #      cluster: "{{ openshift_cloudprovider_vsphere_cluster }}"
+  #      folder: "{{ openshift_cloudprovider_vsphere_folder }}"
+  #      state: "absent"

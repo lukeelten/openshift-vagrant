@@ -40,14 +40,14 @@
     hardware:
       memory_mb: 16384
     networks:
-    - name: "{{ openshift_cloudprovider_vsphere_vm_network }}"
+    - name: "{{ openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_network }}"
       ip: "{{ hostvars[item].ipv4addr }}"
-      netmask: "{{ openshift_cloudprovider_vsphere_vm_netmask }}"
+      netmask: "{{ openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_netmask }}"
       gateway: "{{ openshift_cloudprovider_vsphere_vm_gateway }}"
     customization:
       domain: "{{osm_default_subdomain}}"
       dns_servers:
-      - "{{ openshift_cloudprovider_vsphere_vm_dns }}"
+      - "{{ openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_dns }}"
       dns_suffix: "{{osm_default_subdomain}}"
       hostname: "{{ hostvars[item].inventory_hostname }}"
   with_items: "{{ groups['masters'] }}"
@@ -80,14 +80,14 @@
     hardware:
       memory_mb: 8192
     networks:
-    - name: "{{ openshift_cloudprovider_vsphere_vm_network }}"
+    - name: "{{ openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_network }}"
       ip: "{{ hostvars[item].ipv4addr }}"
-      netmask: "{{ openshift_cloudprovider_vsphere_vm_netmask }}"
+      netmask: "{{ openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_netmask }}"
       gateway: "{{ openshift_cloudprovider_vsphere_vm_gateway }}"
     customization:
       domain: "{{osm_default_subdomain}}"
       dns_servers:
-      - "{{ openshift_cloudprovider_vsphere_vm_dns }}"
+      - "{{ openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_dns }}"
       dns_suffix: "{{osm_default_subdomain}}"
       hostname: "{{ hostvars[item].inventory_hostname }}"
   with_items: "{{ groups['infras'] }}"
@@ -120,14 +120,14 @@
     hardware:
       memory_mb: "8192"
     networks:
-    - name: "{{ openshift_cloudprovider_vsphere_vm_network }}"
+    - name: "{{ openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_network }}"
       ip: "{{  hostvars[item].ipv4addr }}"
-      netmask: "{{ openshift_cloudprovider_vsphere_vm_netmask }}"
+      netmask: "{{ openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_netmask }}"
       gateway: "{{ openshift_cloudprovider_vsphere_vm_gateway }}"
     customization:
       domain: "{{osm_default_subdomain}}"
       dns_servers:
-      - "{{ openshift_cloudprovider_vsphere_vm_dns }}"
+      - "{{ openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_dns }}"
       dns_suffix: "{{osm_default_subdomain}}"
       hostname: "{{  hostvars[item].inventory_hostname}}"
   with_items: "{{ groups['apps'] }}"

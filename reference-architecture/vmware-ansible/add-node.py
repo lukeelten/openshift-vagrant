@@ -22,16 +22,16 @@ class VMWareAddNode(object):
     vcenter_host=None
     vcenter_username=None
     vcenter_password=None
-    vcenter_template_name=None
-    vcenter_folder=None
-    vcenter_datastore=None
-    vcenter_datacenter=None
-    vcenter_cluster=None
-    vcenter_datacenter=None
-    vcenter_resource_pool=None
-    vm_dns=None
-    vm_gw=None
-    vm_netmask=None
+    openshift_cloudprovider_vsphere_template=None
+    openshift_cloudprovider_vsphere_folder=None
+    openshift_cloudprovider_vsphere_datastore=None
+    openshift_cloudprovider_vsphere_datacenter=None
+    openshift_cloudprovider_vsphere_cluster=None
+    openshift_cloudprovider_vsphere_datacenter=None
+    openshift_cloudprovider_vsphere_resource_pool=None
+    openshift_cloudprovider_vsphere_vm_dns=None
+    openshift_cloudprovider_vsphere_vm_gateway=None
+    openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_netmask=None
     rhel_subscription_server=None
     openshift_sdn=None
     byo_lb=None
@@ -57,7 +57,7 @@ class VMWareAddNode(object):
     rhsm_katello_url=None
     rhsm_activation_key=None
     rhsm_org_id=None
-    dns_zone=None
+    osm_default_subdomain=None
     app_dns_prefix=None
     admin_key=None
     user_key=None
@@ -161,11 +161,11 @@ class VMWareAddNode(object):
             'deployment_type':'openshift-enterprise',
             'openshift_vers':'v3_4',
             'vcenter_username':'administrator@vsphere.local',
-            'vcenter_template_name':'ocp-server-template-2.0.2',
-            'vcenter_folder':'ocp',
-            'vcenter_resource_pool':'/Resources/OCP3',
+            'openshift_cloudprovider_vsphere_template':'ocp-server-template-2.0.2',
+            'openshift_cloudprovider_vsphere_folder':'ocp',
+            'openshift_cloudprovider_vsphere_resource_pool':'/Resources/OCP3',
             'app_dns_prefix':'apps',
-            'vm_network':'VM Network',
+            'openshift_cloudprovider_vsphere_vm_network':'VM Network',
             'rhel_subscription_pool':'Red Hat OpenShift Container Platform, Premium*',
             'openshift_sdn':'redhat/openshift-ovs-subnet',
             'byo_lb':'no',
@@ -210,19 +210,19 @@ class VMWareAddNode(object):
         self.vcenter_host = config.get('vmware', 'vcenter_host')
         self.vcenter_username = config.get('vmware', 'vcenter_username')
         self.vcenter_password = config.get('vmware', 'vcenter_password')
-        self.vcenter_template_name = config.get('vmware', 'vcenter_template_name')
-        self.vcenter_folder = config.get('vmware', 'vcenter_folder')
-        self.vcenter_datastore = config.get('vmware', 'vcenter_datastore')
-        self.vcenter_datacenter = config.get('vmware', 'vcenter_datacenter')
-        self.vcenter_cluster = config.get('vmware', 'vcenter_cluster')
-        self.vcenter_datacenter = config.get('vmware', 'vcenter_datacenter')
-        self.vcenter_resource_pool = config.get('vmware', 'vcenter_resource_pool')
-        self.dns_zone= config.get('vmware', 'dns_zone')
+        self.openshift_cloudprovider_vsphere_template = config.get('vmware', 'openshift_cloudprovider_vsphere_template')
+        self.openshift_cloudprovider_vsphere_folder = config.get('vmware', 'openshift_cloudprovider_vsphere_folder')
+        self.openshift_cloudprovider_vsphere_datastore = config.get('vmware', 'openshift_cloudprovider_vsphere_datastore')
+        self.openshift_cloudprovider_vsphere_datacenter = config.get('vmware', 'openshift_cloudprovider_vsphere_datacenter')
+        self.openshift_cloudprovider_vsphere_cluster = config.get('vmware', 'openshift_cloudprovider_vsphere_cluster')
+        self.openshift_cloudprovider_vsphere_datacenter = config.get('vmware', 'openshift_cloudprovider_vsphere_datacenter')
+        self.openshift_cloudprovider_vsphere_resource_pool = config.get('vmware', 'openshift_cloudprovider_vsphere_resource_pool')
+        self.osm_default_subdomain= config.get('vmware', 'osm_default_subdomain')
         self.app_dns_prefix = config.get('vmware', 'app_dns_prefix')
-        self.vm_dns = config.get('vmware', 'vm_dns')
-        self.vm_gw = config.get('vmware', 'vm_gw')
-        self.vm_netmask = config.get('vmware', 'vm_netmask')
-        self.vm_network = config.get('vmware', 'vm_network')
+        self.openshift_cloudprovider_vsphere_vm_dns = config.get('vmware', 'openshift_cloudprovider_vsphere_vm_dns')
+        self.openshift_cloudprovider_vsphere_vm_gateway = config.get('vmware', 'openshift_cloudprovider_vsphere_vm_gateway')
+        self.openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_netmask = config.get('vmware', 'openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_netmask')
+        self.openshift_cloudprovider_vsphere_vm_network = config.get('vmware', 'openshift_cloudprovider_vsphere_vm_network')
         self.rhel_subscription_user = config.get('vmware', 'rhel_subscription_user')
         self.rhel_subscription_pass = config.get('vmware', 'rhel_subscription_pass')
         self.rhel_subscription_server = config.get('vmware', 'rhel_subscription_server')
@@ -260,7 +260,7 @@ class VMWareAddNode(object):
                 self.inventory_file = "crs-inventory.json"
             if 'cns' in self.container_storage:
                 self.inventory_file = "cns-inventory.json"
-        required_vars = {'cluster_id':self.cluster_id, 'dns_zone':self.dns_zone, 'vcenter_host':self.vcenter_host, 'vcenter_password':self.vcenter_password, 'vm_ipaddr_start':self.vm_ipaddr_start, 'ldap_fqdn':self.ldap_fqdn, 'ldap_user_password':self.ldap_user_password, 'vm_dns':self.vm_dns, 'vm_gw':self.vm_gw, 'vm_netmask':self.vm_netmask, 'vcenter_datacenter':self.vcenter_datacenter}
+        required_vars = {'cluster_id':self.cluster_id, 'osm_default_subdomain':self.osm_default_subdomain, 'vcenter_host':self.vcenter_host, 'vcenter_password':self.vcenter_password, 'vm_ipaddr_start':self.vm_ipaddr_start, 'ldap_fqdn':self.ldap_fqdn, 'ldap_user_password':self.ldap_user_password, 'openshift_cloudprovider_vsphere_vm_dns':self.openshift_cloudprovider_vsphere_vm_dns, 'openshift_cloudprovider_vsphere_vm_gateway':self.openshift_cloudprovider_vsphere_vm_gateway, 'openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_netmask':self.openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_netmask, 'openshift_cloudprovider_vsphere_datacenter':self.openshift_cloudprovider_vsphere_datacenter}
         for k, v in required_vars.items():
             if v == '':
                 err_count += 1
@@ -268,7 +268,7 @@ class VMWareAddNode(object):
         if err_count > 0:
             print "Please fill out the missing variables in %s " %  vmware_ini_path
             exit (1)
-        self.wildcard_zone="%s.%s" % (self.app_dns_prefix, self.dns_zone)
+        self.wildcard_zone="%s.%s" % (self.app_dns_prefix, self.osm_default_subdomain)
         self.support_nodes=0
 
         print 'Configured inventory values:'
@@ -326,7 +326,7 @@ class VMWareAddNode(object):
             d['host_inventory'][guest_name]['guestname'] = guest_name
             d['host_inventory'][guest_name]['ip4addr'] = unusedip4addr[0]
             d['host_inventory'][guest_name]['tag'] = str(self.cluster_id) + '-' + self.node_type
-            data = data + '{ "node" : { "hostnames": {"manage": [ "%s.%s" ],"storage": [ "%s" ]},"zone": %s },"devices": [ "/dev/sdd" ]}' % (  guest_name, self.dns_zone,  unusedip4addr[0], i+1 )
+            data = data + '{ "node" : { "hostnames": {"manage": [ "%s.%s" ],"storage": [ "%s" ]},"zone": %s },"devices": [ "/dev/sdd" ]}' % (  guest_name, self.osm_default_subdomain,  unusedip4addr[0], i+1 )
             del unusedip4addr[0]
             if unusedip4addr:
                 data = data + ","
@@ -355,7 +355,7 @@ class VMWareAddNode(object):
         print 'Inventory file created: %s' % self.inventory_file
 
         if self.byo_lb == "False":
-            lb_host_fqdn = "%s.%s" % (self.lb_host, self.dns_zone)
+            lb_host_fqdn = "%s.%s" % (self.lb_host, self.osm_default_subdomain)
             self.lb_host = lb_host_fqdn
 
             if self.ocp_hostname_prefix is not None:
@@ -419,19 +419,19 @@ class VMWareAddNode(object):
             command=command + ' --extra-vars "@./%s" --tags %s -e \' add_node=yes vcenter_host=%s \
             vcenter_username=%s \
             vcenter_password=%s \
-            vcenter_template_name=%s \
-            vcenter_folder=%s \
-            vcenter_datastore=%s \
-            vcenter_datacenter=%s \
-            vcenter_cluster=%s \
-            vcenter_datacenter=%s \
-            vcenter_resource_pool=%s \
-            dns_zone=%s \
+            openshift_cloudprovider_vsphere_template=%s \
+            openshift_cloudprovider_vsphere_folder=%s \
+            openshift_cloudprovider_vsphere_datastore=%s \
+            openshift_cloudprovider_vsphere_datacenter=%s \
+            openshift_cloudprovider_vsphere_cluster=%s \
+            openshift_cloudprovider_vsphere_datacenter=%s \
+            openshift_cloudprovider_vsphere_resource_pool=%s \
+            osm_default_subdomain=%s \
             app_dns_prefix=%s \
-            vm_dns=%s \
-            vm_gw=%s \
-            vm_netmask=%s \
-            vm_network=%s \
+            openshift_cloudprovider_vsphere_vm_dns=%s \
+            openshift_cloudprovider_vsphere_vm_gateway=%s \
+            openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_netmask=%s \
+            openshift_cloudprovider_vsphere_vm_network=%s \
             wildcard_zone=%s \
             console_port=%s \
             cluster_id=%s \
@@ -456,19 +456,19 @@ class VMWareAddNode(object):
                             self.vcenter_host,
                             self.vcenter_username,
                             self.vcenter_password,
-                            self.vcenter_template_name,
-                            self.vcenter_folder,
-                            self.vcenter_datastore,
-                            self.vcenter_datacenter,
-                            self.vcenter_cluster,
-                            self.vcenter_datacenter,
-                            self.vcenter_resource_pool,
-                            self.dns_zone,
+                            self.openshift_cloudprovider_vsphere_template,
+                            self.openshift_cloudprovider_vsphere_folder,
+                            self.openshift_cloudprovider_vsphere_datastore,
+                            self.openshift_cloudprovider_vsphere_datacenter,
+                            self.openshift_cloudprovider_vsphere_cluster,
+                            self.openshift_cloudprovider_vsphere_datacenter,
+                            self.openshift_cloudprovider_vsphere_resource_pool,
+                            self.osm_default_subdomain,
                             self.app_dns_prefix,
-                            self.vm_dns,
-                            self.vm_gw,
-                            self.vm_netmask,
-                            self.vm_network,
+                            self.openshift_cloudprovider_vsphere_vm_dns,
+                            self.openshift_cloudprovider_vsphere_vm_gateway,
+                            self.openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_netmask,
+                            self.openshift_cloudprovider_vsphere_vm_network,
                             self.wildcard_zone,
                             self.console_port,
                             self.cluster_id,

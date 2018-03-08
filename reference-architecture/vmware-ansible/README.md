@@ -40,7 +40,7 @@ $ cd ~/git/openshift-ansible-contrib/reference-architecture/vmware-ansible/ && .
 ```
 
 ### VMware Template Name
-The variable `vcenter_template_name` is the VMware template name it should have RHEL 7.4 installed with the open-vm-tools package.
+The variable `openshift_cloudprovider_vsphere_template` is the VMware template name it should have RHEL 7.4 installed with the open-vm-tools package.
 
 ### New VMware Environment (Greenfield)
 When configuring a Greednfield cluster the following components are installed by default:
@@ -137,9 +137,9 @@ $ ./ocp-on-vmware.py --tag ocp-install,ocp-configure
 Configured values:
 ... content abbreviated ...
     app_dns_prefix: apps
-    vm_dns: 10.*.*.5
-    vm_gw: 10.*.*.254
-    vm_netmask: 255.255.254.0
+    openshift_cloudprovider_vsphere_vm_dns: 10.*.*.5
+    openshift_cloudprovider_vsphere_vm_gateway: 10.*.*.254
+    openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_netmask: 255.255.254.0
     byo_lb: yes
     lb_host: my-load-balancer.lb.example.com
     byo_nfs: yes
@@ -192,11 +192,11 @@ $ cd /root/git/openshift-ansible-contrib/reference-architecture/vmware-ansible/
 $ cat ocp-on-vmware.ini
 ...omitted...
 # folder/cluster/resource pool in vCenter to organize VMs
-vcenter_folder=ocp
-vcenter_cluster=devel
-vcenter_datacenter=Boston
-vcenter_resource_pool=OCP3
-vcenter_datastore=ose3-vmware
+openshift_cloudprovider_vsphere_folder=ocp
+openshift_cloudprovider_vsphere_cluster=devel
+openshift_cloudprovider_vsphere_datacenter=Boston
+openshift_cloudprovider_vsphere_resource_pool=OCP3
+openshift_cloudprovider_vsphere_datastore=ose3-vmware
 ...omitted...
 # persistent container storage: none, crs, cns
 container_storage=cns

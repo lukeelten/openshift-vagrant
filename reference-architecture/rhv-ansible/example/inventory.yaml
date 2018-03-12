@@ -1,0 +1,53 @@
+---
+all:
+  children:
+    OSEv3:
+      children:
+        nodes:
+          children:
+            masters:
+              hosts:
+                openshift-master-[0:2].{{ public_hosted_zone }}
+              vars:
+                openshift_node_labels: "{'role': 'master'}"
+                openshift_schedulable: true
+            apps:
+              hosts:
+                openshift-node-[0:1].{{ public_hosted_zone }}
+              vars:
+                openshift_node_labels: "{'role': 'app'}"
+                openshift_schedulable: true
+            infras:
+              hosts:
+                openshift-infra-[0:1].{{ public_hosted_zone }}
+              vars:
+                openshift_node_labels: "{'role': 'infra'}"
+                openshift_schedulable: true
+            lb:
+              hosts:
+                "openshift-lb.{{ public_hosted_zone }}"
+            etcd:
+              children:
+                masters:
+      vars:
+        ansible_ssh_user: root
+        console_port: 8443
+        debug_level: 2
+        openshift_additional_repos: [{'id': 'ose-devel', 'name': 'ose-devel', 'baseurl': 'http://download.eng.bos.redhat.com/rcm-guest/puddles/RHAOS/AtomicOpenShift/3.9/latest/x86_64/os/', 'enabled': 1, 'gpgcheck': 0}]
+        openshift_debug_level: "{{ debug_level }}"
+        openshift_deployment_type: openshift-enterprise
+        openshift_enable_service_catalog: false
+        openshift_examples_modify_imagestreams: True
+        openshift_master_cluster_method: native
+        openshift_node_debug_level: "{{ node_debug_level | default(debug_level, true) }}"
+        openshift_override_hostname_check: true
+        openshift_release: 3.9
+        openshift_vers: v3_9
+        openshift_web_console_prefix: registry.reg-aws.openshift.com/openshift3/ose-
+        oreg_url: "{{ vault_oreg_url }}"
+        oreg_auth_user: "{{ vault_oreg_auth_user }}"
+        # https://console.reg-aws.openshift.com/console/command-line
+        oreg_auth_password: "{{ vault_oreg_auth_password }}"
+        ose-ansible-service-broker: registry.reg-aws.openshift.com/openshift3/ose-
+        osm_default_node_selector: role=app
+        template_service_broker_prefix: registry.reg-aws.openshift.com/openshift3/ose-

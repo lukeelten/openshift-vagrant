@@ -5,7 +5,10 @@
 engine_url:
 engine_user: admin@internal
 engine_password:
-# CA file copied from engine:/etc/pki/ovirt-engine/ca.pem; path is relative to playbook directory
+# CA file copied or downloaded from engine; path is relative to playbook directory.
+# Download URL https://<engine>/ovirt-engine/services/pki-resource?resource=ca-certificate&format=X509-PEM-CA
+# If you are running on engine, you could use the below.
+# engine_cafile: /etc/pki/ovirt-engine/ca.pem
 engine_cafile: ../ca.pem
 
 ##############################################################################
@@ -23,7 +26,7 @@ template_name: rhel7
 #image_path: /home/myuser/Downloads/{{ template_name }}.qcow2
 
 ## For CentOS 7:
-#qcow_url: https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2
+#qcow_url: https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2c
 
 ## For RHEL: Find KVM Guest Image in Downloads -> RHEL on https://access.redhat.com/ and use before the link expires:
 #qcow_url:https://access.cdn.redhat.com//content/origin/files/<omitted>/rhel-server-7.4-x86_64-kvm.qcow2?_auth_=<omitted>
@@ -56,7 +59,7 @@ rhsm_katello_url: http://satellite.example.com/pub/katello-ca-consumer-latest.no
 ##############################################################################
 ### PUBLIC SSH key for access to all nodes.
 ## Use ssh-agent or a passwordless key in ~/.ssh/id_rsa for the PRIVATE key.
-root_ssh_key:
+root_ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
 ##############################################################################
 ### Openshift variables

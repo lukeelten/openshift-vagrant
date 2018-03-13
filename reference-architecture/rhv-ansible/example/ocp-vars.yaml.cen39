@@ -19,7 +19,7 @@ qcow_url: https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.
 #qcow_url:
 
 template_name: centos
-image_path: /home/cwilkers/Downloads/{{ template_name }}.qcow2
+image_path: "{{ ansible_env.HOME }}/Downloads/{{ template_name }}.qcow2"
 
 ## Name of cluster to install on
 rhv_cluster: Default

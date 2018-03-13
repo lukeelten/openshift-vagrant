@@ -18,7 +18,7 @@ qcow_url: http://satellite.example.com/pub/rhel-server-7.4.x86_64-kvm.qcow2
 #qcow_url:
 
 template_name: rhel74
-image_path: /home/cwilkers/Downloads/{{ template_name }}.qcow2
+image_path: "{{ ansible_env.HOME }}/Downloads/{{ template_name }}.qcow2"
 
 ## Name of cluster to install on
 rhv_cluster: Default

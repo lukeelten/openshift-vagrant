@@ -2,7 +2,7 @@
 ###########################
 # Common
 ###########################
-compatibility_version: 4.1
+compatibility_version: 4.2
 
 # Data center
 data_center_name: Default
@@ -54,7 +54,12 @@ node_vm:
       interface: virtio
 
 
-hack_guest_agent_script: |
+##########################
+# Cloud Init Script
+##########################
+# Use the following if RHEL 7.4 or below VMs are being created on a RHV 4.2 or above engine
+
+update_guest_agent_script: |
   runcmd:
     - sed -i 's@^# device =.*@device = /dev/virtio-ports/ovirt-guest-agent.0@' /etc/ovirt-guest-agent.conf
     - sed -i 's@com.redhat.rhevm.vdsm@ovirt-guest-agent.0@' /etc/udev/rules.d/55-ovirt-guest-agent.rules
@@ -70,21 +75,21 @@ vms:
     cloud_init:
       host_name: "openshift-master-0.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ hack_guest_agent_script }}"
+      custom_script: "{{ update_guest_agent_script }}"
   - name: "openshift-master-1.{{ public_hosted_zone }}"
     tag: openshift_master
     profile: "{{ master_vm }}"
     cloud_init:
       host_name: "openshift-master-1.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ hack_guest_agent_script }}"
+      custom_script: "{{ update_guest_agent_script }}"
   - name: "openshift-master-2.{{ public_hosted_zone }}"
     tag: openshift_master
     profile: "{{ master_vm }}"
     cloud_init:
       host_name: "openshift-master-2.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ hack_guest_agent_script }}"
+      custom_script: "{{ update_guest_agent_script }}"
 
   # Infra VMs
   - name: "openshift-infra-0.{{ public_hosted_zone }}"
@@ -93,14 +98,14 @@ vms:
     cloud_init:
       host_name: "openshift-infra-0.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ hack_guest_agent_script }}"
+      custom_script: "{{ update_guest_agent_script }}"
   - name: "openshift-infra-1.{{ public_hosted_zone }}"
     tag: openshift_infra
     profile: "{{ node_vm }}"
     cloud_init:
       host_name: "openshift-infra-1.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ hack_guest_agent_script }}"
+      custom_script: "{{ update_guest_agent_script }}"
 
   # Node VMs
   - name: "openshift-node-0.{{ public_hosted_zone }}"
@@ -109,14 +114,14 @@ vms:
     cloud_init:
       host_name: "openshift-node-0.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ hack_guest_agent_script }}"
+      custom_script: "{{ update_guest_agent_script }}"
   - name: "openshift-node-1.{{ public_hosted_zone }}"
     tag: openshift_node
     profile: "{{ node_vm }}"
     cloud_init:
       host_name: "openshift-node-1.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ hack_guest_agent_script }}"
+      custom_script: "{{ update_guest_agent_script }}"
 
   # Load balancer
   - name: "openshift-lb.{{ public_hosted_zone }}"
@@ -125,7 +130,7 @@ vms:
     cloud_init:
       host_name: "openshift-lb.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ hack_guest_agent_script }}"
+      custom_script: "{{ update_guest_agent_script }}"
 
 affinity_groups:
   - name: masters_ag

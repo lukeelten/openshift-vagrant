@@ -15,8 +15,11 @@ engine_cafile: ../ca.pem
 
 ##############################################################################
 ### Red Hat Virtualization VM Image
+##############################################################################
+
 ## For CentOS 7:
-#qcow_url: https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2
+#qcow_url: https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2c
+
 ## For RHEL: Find KVM Guest Image in Downloads -> RHEL on https://access.redhat.com/ and use before the link expires:
 #qcow_url:https://access.cdn.redhat.com//content/origin/files/<omitted>/rhel-server-7.4-x86_64-kvm.qcow2?_auth_=<omitted>
 ## Alternatively, download the above KVM image, and re-host it on a local satellite:
@@ -35,65 +38,13 @@ rhv_data_storage: vmstore
 ##############################################################################
 ### PUBLIC SSH key for access to all nodes.
 ## Use ssh-agent or a passwordless key in ~/.ssh/id_rsa for the PRIVATE key.
-root_ssh_key: "{{ vault_root_ssh_key }}"
+# Example with vault
+#root_ssh_key: "{{ vault_root_ssh_key }}"
+# Example with local id_rsa.pub
+root_ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
+## Define if using nsupdate to manage DNS entries dynamically
+## This will allow the output_dns.yaml playbook to create an
+## nsupdate script
 nsupdate_server: localhost
 
-##############################################################################
-##############################################################################
-####
-#### Openshift variables  TODO Delete vars moved to static inventory
-####
-##############################################################################
-##############################################################################
-## Choices of deployment type: openshift-enterprise, origin
-#deployment_type: openshift-enterprise
-#openshift_vers: v3_9
-#openshift_release: 3.9
-#console_port: 8443
-#openshift_enable_service_catalog: false
-#oreg_url: registry.reg-aws.openshift.com/openshift3/ose-${component}:${version}
-# https://console.reg-aws.openshift.com/console/command-line
-#rhsub_pool: Red Hat OpenShift Container Platform*
-#rhsub_server: "{{ vault_rhsub_server }}"
-#rhsub_user: "{{ vault_rhsub_user }}"
-#rhsub_password: "{{ vault_rhsub_password }}"
-
-##############################################################################
-### DNS entries
-## Wildcard *.{{app_dns_prefix}}.{{public_hosted_zone}} must point to IP of LB
-#public_hosted_zone: example.com
-#app_dns_prefix: apps
-#load_balancer_hostname: openshift-lb.{{public_hosted_zone}}
-#openshift_master_cluster_hostname: "{{load_balancer_hostname}}"
-#openshift_master_cluster_public_hostname: openshift.{{public_hosted_zone}}
-
-##############################################################################
-### OpenShift Identity Provider
-# htpasswd shown here, other options documented at
-# https://docs.openshift.com/container-platform/3.5/install_config/configuring_authentication.html
-#openshift_master_identity_providers:
-#  - name: htpasswd_auth
-#    login: true
-#    challenge: true
-#    kind: HTPasswdPasswordIdentityProvider
-#    filename: /etc/origin/master/htpasswd
-# Defining htpasswd users
-#openshift_master_htpasswd_users:
-#  - user1: <pre-hashed password>
-#  - user2: <pre-hashed password>
-# Use 'htpasswd -n <user>' to generate password hash. (htpasswd from httpd-tools RPM)
-# Example with admin:changeme
-#openshift_master_htpasswd_users: {'myuser': '$apr1$zAhyA9Ko$rBxBOwAwwtRuuaw8OtCwH0'}
-# or
-#openshift_master_htpasswd_file=<path to local pre-generated htpasswd file>
-
-##############################################################################
-### Registry storage
-## NFS
-#openshift_hosted_registry_storage_kind: nfs
-#openshift_hosted_registry_replicas: 2
-#openshift_hosted_registry_selector: role=infra
-#openshift_hosted_registry_storage_host: 192.168.155.1
-#openshift_hosted_registry_storage_nfs_directory: /var/lib/exports
-#openshift_hosted_registry_storage_volume_name: registryvol

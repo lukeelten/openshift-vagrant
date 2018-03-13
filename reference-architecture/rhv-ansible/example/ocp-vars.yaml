@@ -41,7 +41,7 @@ rhsub_pool: Red Hat OpenShift Container Platform*
 ## For subscriptions to Red Hat's CDN
 ## Userid/Password could be moved to a vault file and encrypted for safety, see the following link for details:
 ## http://docs.ansible.com/ansible/playbooks_vault.html
-rhsub_server: subscription.rhsm.stage.redhat.com
+rhsub_server: "{{ vault_rhsub_server }}"
 rhsub_user: "{{ vault_rhsub_user }}"
 rhsub_password: "{{ vault_rhsub_password }}"
 

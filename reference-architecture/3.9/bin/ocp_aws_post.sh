@@ -23,12 +23,15 @@ aws ec2 create-tags --resources $(echo $ocp_awssg_infra | jq -r '.GroupId') --ta
 aws ec2 create-tags --resources $(echo $ocp_awssg_node | jq -r '.GroupId') --tags Key=Name,Value=Node
 aws ec2 create-tags --resources $(echo $ocp_awssg_node | jq -r '.GroupId') --tags Key=clusterid,Value=${ocp_clusterid}
 
+echo 'Add the following to openshift-ansible installer inventory'
+echo
 echo '[masters]'
 echo $ocp_hostinv | jq -r '.masters[]'
 echo
-echo '[etcd]
+echo '[etcd]'
 echo $ocp_hostinv | jq -r '.etcd[]'
 echo
+echo '[routers]'
 echo $ocp_hostinv | jq -r '.routers[]'
 echo
 echo '[nodes]'

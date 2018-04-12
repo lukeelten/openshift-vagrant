@@ -14,11 +14,23 @@ if [ ! -f $HOME/.ssh/${ocp_clusterid} ]; then
   echo 'Enter ssh key password'
   read -r passphrase
   ssh-keygen -P $passphrase -o -t rsa -f ~/.ssh/${ocp_clusterid}
-  export sshkey=($(cat ~/.ssh/$ocp_clusterid.pub))
+fi
+export sshkey=($(cat ~/.ssh/${ocp_clusterid}.pub))
+
+if [ ! "$(env | grep SSH_AGENT_PID)" ] || [ ! "$(ps -ef | grep $SSH_AGENT_PID)" ]; then
+  rm -rf $SSH_AUTH_SOCK
+  unset SSH_AUTH_SOCK
+  pkill ssh-agent
+  export sshagent=$(nohup ssh-agent &)
+  export sshagent=($(echo $sshagent | awk -F'; ' {'print $1 " " $3'}))
+  export ${sshagent[0]}
+  export ${sshagent[1]}
+  unset sshagent
 fi
 
 IFS=$'\n'
 if [ ! $(ssh-add -L | grep ${sshkey[1]}) ]; then
+  echo ssh-add
   ssh-add ~/.ssh/${ocp_clusterid}
 fi
 unset IFS

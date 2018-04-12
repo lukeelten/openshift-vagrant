@@ -9,9 +9,10 @@ if [ ! "$ocp_ec2_bastion" ]; then
     --block-device-mappings "DeviceName=/dev/sda1,Ebs={DeleteOnTermination=False,VolumeSize=100}" \
     --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=bastion},{Key=Clusterid,Value=$ocp_clusterid}]' \
   )
-  aws ec2 associate-address \
+  sleep 30
+  export ocp_ec2_bastioneipassc=$(aws ec2 associate-address \
     --allocation-id $(echo $ocp_eip4 | jq -r '.AllocationId') \
-    --instance-id $(echo $ocp_ec2_bastion | jq -r '.Instances[].InstanceId')
+    --instance-id $(echo $ocp_ec2_bastion | jq -r '.Instances[].InstanceId'))
 fi
 
 if [ ! "$ocp_ec2_master1" ]; then
@@ -200,18 +201,18 @@ export ocp_hostinv="
   ], \
   \"etcd\": [ \
     \"masters\" \
+  ], \
+  \"routers\": [ \
+    \"$(echo $ocp_ec2_infra1 | jq -r '.Instances[].PrivateDnsName')\", \
+    \"$(echo $ocp_ec2_infra2 | jq -r '.Instances[].PrivateDnsName')\", \
+    \"$(echo $ocp_ec2_infra3 | jq -r '.Instances[].PrivateDnsName')\" \
+  ], \
+  \"nodes\": [ \
+    \"$(echo $ocp_ec2_node1 | jq -r '.Instances[].PrivateDnsName')\", \
+    \"$(echo $ocp_ec2_node2 | jq -r '.Instances[].PrivateDnsName')\", \
+    \"$(echo $ocp_ec2_node3 | jq -r '.Instances[].PrivateDnsName')\", \
+    \"$(echo $ocp_ec2_node4 | jq -r '.Instances[].PrivateDnsName')\", \
+    \"$(echo $ocp_ec2_node5 | jq -r '.Instances[].PrivateDnsName')\", \
+    \"$(echo $ocp_ec2_node6 | jq -r '.Instances[].PrivateDnsName')\" \
   ] \
-  \"routers\": [
-    \"$(echo $ocp_ec2_infra1 | jq -r '.Instances[].PrivateDnsName')\",
-    \"$(echo $ocp_ec2_infra2 | jq -r '.Instances[].PrivateDnsName')\",
-    \"$(echo $ocp_ec2_infra3 | jq -r '.Instances[].PrivateDnsName')\"
-  ]
-  \"nodes\": [
-    \"$(echo $ocp_ec2_node1 | jq -r '.Instances[].PrivateDnsName')\",
-    \"$(echo $ocp_ec2_node2 | jq -r '.Instances[].PrivateDnsName')\",
-    \"$(echo $ocp_ec2_node3 | jq -r '.Instances[].PrivateDnsName')\"
-    \"$(echo $ocp_ec2_node4 | jq -r '.Instances[].PrivateDnsName')\",
-    \"$(echo $ocp_ec2_node5 | jq -r '.Instances[].PrivateDnsName')\",
-    \"$(echo $ocp_ec2_node6 | jq -r '.Instances[].PrivateDnsName')\"
-  ]
 }"

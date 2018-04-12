@@ -17,6 +17,12 @@ if [ ! "$ocp_vpcdhcpopts" ]; then
       } \
     ]" | \
     jq -r '.')
+  aws ec2 modify-vpc-attribute \
+    --enable-dns-hostnames \
+    --vpc-id $(echo $ocp_vpc | jq -r '.Vpc.VpcId')
+  aws ec2 modify-vpc-attribute \
+    --enable-dns-support \
+    --vpc-id $(echo $ocp_vpc | jq -r '.Vpc.VpcId')
   aws ec2 associate-dhcp-options \
     --dhcp-options-id $(echo $ocp_vpcdhcpopts | jq -r '.DhcpOptions.DhcpOptionsId') \
     --vpc-id $(echo $ocp_vpc | jq -r '.Vpc.VpcId')
@@ -88,9 +94,6 @@ if [ ! "$ocp_natgw3" ]; then
     --allocation-id $(echo $ocp_eip3 | jq -r '.AllocationId') \
     )
 fi
-
-#echo 'sleeping 60s to wait for NatGWs'
-#sleep 60
 
 if [ ! "$ocp_routetable1" ]; then
   export ocp_routetable1=$(aws ec2 create-route-table \
@@ -327,7 +330,7 @@ if [ ! "$aws_route53rrset_infraint" ]; then
         \"Type\": \"CNAME\", \
         \"TTL\": 300, \
         \"ResourceRecords\": [ \
-          { \"Value\": \"$(echo $ocp_elb_infraext | jq -r '.DNSName')\" } \
+          { \"Value\": \"$(echo $ocp_elb_infraint | jq -r '.DNSName')\" } \
         ] \
       } \
     } \

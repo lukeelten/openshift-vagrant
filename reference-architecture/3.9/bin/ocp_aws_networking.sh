@@ -37,6 +37,25 @@ if [ ! "$ocp_az" ]; then
     sed -e "s/ $//g"))
 fi
 
+if [ ! "$ocp_subnet1_routing" ]; then
+  export ocp_subnet1_routing=$(aws ec2 create-subnet \
+    --vpc-id $(echo $ocp_vpc | jq -r '.Vpc.VpcId') \
+    --cidr-block ${ocp_cidrsubnets_routing[0]} \
+    --availability-zone ${ocp_az[0]})
+fi
+if [ ! "$ocp_subnet2_routing" ]; then
+  export ocp_subnet2_routing=$(aws ec2 create-subnet \
+    --vpc-id $(echo $ocp_vpc | jq -r '.Vpc.VpcId') \
+    --cidr-block ${ocp_cidrsubnets_routing[1]} \
+    --availability-zone ${ocp_az[1]})
+fi
+if [ ! "$ocp_subnet3_routing" ]; then
+  export ocp_subnet3_routing=$(aws ec2 create-subnet \
+    --vpc-id $(echo $ocp_vpc | jq -r '.Vpc.VpcId') \
+    --cidr-block ${ocp_cidrsubnets_routing[2]} \
+    --availability-zone ${ocp_az[2]})
+fi
+
 if [ ! "$ocp_subnet1" ]; then
   export ocp_subnet1=$(aws ec2 create-subnet \
     --vpc-id $(echo $ocp_vpc | jq -r '.Vpc.VpcId') \
@@ -63,6 +82,9 @@ if [ ! "$ocp_igw" ]; then
   --vpc-id $(echo $ocp_vpc | jq -r '.Vpc.VpcId')
 fi
 
+if [ ! "$ocp_eip0" ]; then
+  export ocp_eip0=$(aws ec2 allocate-address --domain vpc)
+fi
 if [ ! "$ocp_eip1" ]; then
   export ocp_eip1=$(aws ec2 allocate-address --domain vpc)
 fi
@@ -72,29 +94,54 @@ fi
 if [ ! "$ocp_eip3" ]; then
   export ocp_eip3=$(aws ec2 allocate-address --domain vpc)
 fi
-if [ ! "$ocp_eip4" ]; then
-  export ocp_eip4=$(aws ec2 allocate-address --domain vpc)
-fi
 
 if [ ! "$ocp_natgw1" ]; then
   export ocp_natgw1=$(aws ec2 create-nat-gateway \
-    --subnet-id $(echo $ocp_subnet1 | jq -r '.Subnet.SubnetId') \
+    --subnet-id $(echo $ocp_subnet1_routing | jq -r '.Subnet.SubnetId') \
     --allocation-id $(echo $ocp_eip1 | jq -r '.AllocationId') \
     )
 fi
 if [ ! "$ocp_natgw2" ]; then
   export ocp_natgw2=$(aws ec2 create-nat-gateway \
-    --subnet-id $(echo $ocp_subnet2 | jq -r '.Subnet.SubnetId') \
+    --subnet-id $(echo $ocp_subnet2_routing | jq -r '.Subnet.SubnetId') \
     --allocation-id $(echo $ocp_eip2 | jq -r '.AllocationId') \
     )
 fi
 if [ ! "$ocp_natgw3" ]; then
   export ocp_natgw3=$(aws ec2 create-nat-gateway \
-    --subnet-id $(echo $ocp_subnet3 | jq -r '.Subnet.SubnetId') \
+    --subnet-id $(echo $ocp_subnet3_routing | jq -r '.Subnet.SubnetId') \
     --allocation-id $(echo $ocp_eip3 | jq -r '.AllocationId') \
     )
 fi
 
+if [ ! "$ocp_routetable0" ]; then
+  export ocp_routetable0=$(aws ec2 create-route-table \
+    --vpc-id $(echo $ocp_vpc | jq -r '.Vpc.VpcId')
+    )
+  aws ec2 create-route \
+    --route-table-id $(echo $ocp_routetable0 | jq -r '.RouteTable.RouteTableId') \
+    --destination-cidr-block 0.0.0.0/0 \
+    --nat-gateway-id $(echo $ocp_igw | jq -r '.InternetGateway.InternetGatewayId') \
+    > /dev/null 2>&1
+fi
+if [ ! "$ocp_rtba0_subnet1_routing" ]; then
+  export ocp_rtba0_subnet1_routing=$(aws ec2 associate-route-table \
+    --route-table-id $(echo $ocp_routetable0 | jq -r '.RouteTable.RouteTableId') \
+    --subnet-id $(echo $ocp_subnet1_routing | jq -r '.Subnet.SubnetId')
+    )
+fi
+if [ ! "$ocp_rtba0_subnet2_routing" ]; then
+  export ocp_rtba0_subnet2_routing=$(aws ec2 associate-route-table \
+    --route-table-id $(echo $ocp_routetable0 | jq -r '.RouteTable.RouteTableId') \
+    --subnet-id $(echo $ocp_subnet2_routing | jq -r '.Subnet.SubnetId')
+    )
+fi
+if [ ! "$ocp_rtba0_subnet3_routing" ]; then
+  export ocp_rtba0_subnet3_routing=$(aws ec2 associate-route-table \
+    --route-table-id $(echo $ocp_routetable0 | jq -r '.RouteTable.RouteTableId') \
+    --subnet-id $(echo $ocp_subnet3_routing | jq -r '.Subnet.SubnetId')
+    )
+fi
 if [ ! "$ocp_routetable1" ]; then
   export ocp_routetable1=$(aws ec2 create-route-table \
     --vpc-id $(echo $ocp_vpc | jq -r '.Vpc.VpcId')
@@ -243,11 +290,6 @@ export ocp_route53_extzone=$(aws route53 create-hosted-zone \
   --caller-reference $(date +%s) \
   --name $ocp_domain \
   --hosted-zone-config "PrivateZone=False")
-fi
-if [ "$ocp_route53_extzone" ]; then
-  echo "Domain $ocp_domain will need delegation set to the following nameservers"
-  echo $ocp_route53_extzone | jq '.DelegationSet.NameServers'
-  echo "Please see whois database to obtain registrar infoformation"
 fi
 if [ ! "$ocp_route53_intzone" ]; then
 export ocp_route53_intzone=$(aws route53 create-hosted-zone \

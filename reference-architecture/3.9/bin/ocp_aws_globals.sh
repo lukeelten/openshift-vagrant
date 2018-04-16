@@ -43,6 +43,7 @@ if [ ! "$ocp_keypair" ]; then
 fi
 if [ ! "$ocp_iamuser" ]; then
   export ocp_iamuser=$(aws iam create-user --user-name ${ocp_clusterid}-registry)
+  sleep 30
   aws iam attach-user-policy \
     --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess \
     --user-name ${ocp_clusterid}-registry

@@ -60,6 +60,23 @@ Host *.ec2.internal
 echo
 echo
 
+echo "Add the following to openshift-ansible installer inventory"
+echo "openshift_hosted_registry_storage_s3_accesskey=$(echo $ocp_iamuser_accesskey | jq -r '.AccessKey.AccessKeyId')"
+echo "openshift_hosted_registry_storage_s3_secretkey=$(echo $ocp_iamuser_accesskey | jq -r '.AccessKey.SecretAccessKey')"
+
+cat >> ~/.ssh/examplerefarch-s3user_access_key << EOF
+<!-- BEGIN ANSIBLE MANAGED BLOCK -->
+openshift_hosted_registry_storage_s3_accesskey=$(echo $ocp_iamuser_accesskey | jq -r '.AccessKey.AccessKeyId')
+openshift_hosted_registry_storage_s3_secretkey=$(echo $ocp_iamuser_accesskey | jq -r '.AccessKey.SecretAccessKey')
+<!-- END ANSIBLE MANAGED BLOCK -->
+EOF
+echo "IAM s3 user access key stored in ~/.ssh/${ocp_clusterid}-s3user_access_key"
+echo "Add the following to openshift-ansible installer inventory"
+cat ~/.ssh/${ocp_clusterid}-s3user_access_key | grep -v '<!--'
+
+echo
+echo
+
 echo "Add the following to openshift-ansible installer inventory
 [masters]
 $(echo $ocp_hostinv | jq -r '.masters[]')

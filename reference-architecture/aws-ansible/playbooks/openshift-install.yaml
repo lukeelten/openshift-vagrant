@@ -31,3 +31,11 @@
 - include: ../../../playbooks/prerequisite.yaml
 
 - include: openshift-setup.yaml
+
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  become: no
+  roles:
+  - cfn-outputs
+  - inventory-file-creation

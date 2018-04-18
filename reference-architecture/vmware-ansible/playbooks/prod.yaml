@@ -1,10 +1,10 @@
 ---
-- name: fulfill OSE3 prerequisites on production hosts roles
+- name: Create VMs from inventory file 
   hosts: localhost
   roles:
     - create-vm-prod-ose
 
-- name: fulfill OSE3 prerequisites on production hosts roles
+- name: Prepare VMs for  OSE3 install 
   hosts: nodes 
   roles:
     - rhsm

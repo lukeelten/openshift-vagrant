@@ -25,7 +25,10 @@ $ yum -y install python2-boto \
                  python-six \
                  python2-boto3 \
                  python-click \
-                 python-httplib2
+                 python-httplib2 \
+                 python-passlib \
+                 httpd-tools \
+                 java-1.8.0-openjdk-headless
 ```
 
 ### Deploying OpenShift Origin
@@ -36,7 +39,8 @@ $ rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rp
 $ yum -y install python-pip git python2-boto \
                  python-netaddr python-httplib2 python-devel \
                  gcc libffi-devel openssl-devel python2-boto3 \
-                 python-click python-six pyOpenSSL
+                 python-click python-six python-passlib pyOpenSSL \
+                 httpd-tools java-1.8.0-openjdk-headless
 $ pip install git+https://github.com/ansible/ansible.git@stable-2.3
 $ mkdir -p /usr/share/ansible/openshift-ansible
 $ git clone https://github.com/openshift/openshift-ansible.git /usr/share/ansible/openshift-ansible

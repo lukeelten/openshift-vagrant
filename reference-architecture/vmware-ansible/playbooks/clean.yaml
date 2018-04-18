@@ -1,8 +1,6 @@
 ---
 - hosts: nodes
   ignore_errors: yes
-  vars_files:
-    - vars/main.yaml
   roles:
     - rhsm-unregister
 
@@ -10,8 +8,6 @@
   user: root
   become: false
   ignore_errors: yes
-  vars_files:
-    - vars/main.yaml
   tasks:
     - name: Delete all added VMs
       vmware_guest:

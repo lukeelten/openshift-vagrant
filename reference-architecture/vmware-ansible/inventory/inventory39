@@ -23,6 +23,25 @@ default_subdomain=stretch.e2e.bos.redhat.com
 openshift_master_cluster_method=native
 osm_default_subdomain="apps.{{ default_subdomain }}"
 
+default_subdomain=stretch.e2e.bos.redhat.com
+
+openshift_cloudprovider_kind=vsphere
+openshift_cloudprovider_vsphere_username="administrator@vsphere.local"
+openshift_cloudprovider_vsphere_password="password"
+openshift_cloudprovider_vsphere_host="vcenter.example.com"
+openshift_cloudprovider_vsphere_datacenter=datacenter
+openshift_cloudprovider_vsphere_cluster=cluster
+openshift_cloudprovider_vsphere_resource_pool=ocp39
+openshift_cloudprovider_vsphere_datastore="datastore"
+openshift_cloudprovider_vsphere_folder=stretch-ocp39
+openshift_cloudprovider_vsphere_template="ocp-server-template"
+openshift_cloudprovider_vsphere_vm_network="VM Network"
+openshift_cloudprovider_vsphere_vm_netmask="255.255.255.0"
+openshift_cloudprovider_vsphere_vm_gateway="192.168.1.1"
+openshift_cloudprovider_vsphere_vm_dns="192.168.2.250"
+
+
+
 openshift_master_identity_providers=[{ "name": "Active_Directory", "challenge": true, "login": true, "kind": "LDAPPasswordIdentityProvider", "attributes": { "id": [ "dn" ], "email": [ "mail" ], "name": [ "cn" ], "preferredUsername": [ "uid" ] }, "insecure": true, "url": "ldap://example.com:389/CN=Users,DC=example,DC=com?sAMAccountName", "bindDN": "CN=openshift,CN=Users,DC=example,DC=com", "bindPassword": "password"}]
 
 

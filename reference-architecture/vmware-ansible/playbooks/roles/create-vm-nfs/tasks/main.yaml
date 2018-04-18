@@ -25,14 +25,14 @@
       datastore: "{{ openshift_cloudprovider_vsphere_datastore }}"
       type: thin
     networks:
-    - name: "{{ openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_network }}"
+    - name: "{{ openshift_cloudprovider_vsphere_vm_network }}"
       ip: "{{ hostvars[item].ipv4addr }}"
-      netmask: "{{ openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_netmask }}"
+      netmask: "{{ openshift_cloudprovider_vsphere_vm_netmask }}"
       gateway: "{{ openshift_cloudprovider_vsphere_vm_gateway }}"
     customization:
-      domain: "{{ osm_default_subdomain }}"
+      domain: "{{ default_subdomain }}"
       dns_servers:
-      - "{{ openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_dns }}"
-      dns_suffix: "{{ osm_default_subdomain }}"
+      - "{{ openshift_cloudprovider_vsphere_vm_dns }}"
+      dns_suffix: "{{ default_subdomain }}"
       hostname: "{{ hostvars[item].inventory_hostname }}"
   with_items: "{{ groups['nfs'] }}"

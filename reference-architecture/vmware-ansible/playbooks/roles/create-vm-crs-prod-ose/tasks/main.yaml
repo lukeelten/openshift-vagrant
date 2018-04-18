@@ -36,13 +36,13 @@
     networks:
     - name: "{{ openshift_cloudprovider_vsphere_vm_network }}"
       ip: "{{ item.value.ip4addr }}"
-      netmask: "{{ openshift_cloudprovider_vsphere_openshift_cloudprovider_vsphere_vm_netmask }}"
+      netmask: "{{ openshift_cloudprovider_vsphere_vm_netmask }}"
       gateway: "{{ openshift_cloudprovider_vsphere_vm_gateway }}"
     customization:
-      domain: "{{osm_default_subdomain}}"
+      domain: "{{default_subdomain}}"
       dns_servers:
       - "{{ openshift_cloudprovider_vsphere_vm_dns }}"
-      dns_suffix: "{{osm_default_subdomain}}"
+      dns_suffix: "{{default_subdomain}}"
       hostname: "{{ item.value.guestname}}"
   with_dict: "{{host_inventory}}"
   when: "'crs' in item.value.guestname"

@@ -1,8 +1,0 @@
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: "{{ openshift_cloudprovider_vsphere_datastore }}"
-provisioner: kubernetes.io/vsphere-volume
-parameters:
-    diskformat: zeroedthick
-    datastore: "{{ openshift_cloudprovider_vsphere_datastore }}"

@@ -8,5 +8,3 @@
   roles:
   # Group systems
   - create-vm-cns-prod-ose
-  - cloud-provider-setup
-  - instance-groups

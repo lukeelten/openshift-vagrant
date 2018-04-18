@@ -30,9 +30,9 @@
       netmask: "{{ openshift_cloudprovider_vsphere_vm_netmask }}"
       gateway: "{{ openshift_cloudprovider_vsphere_vm_gateway }}"
     customization:
-      domain: "{{ osm_default_subdomain }}"
+      domain: "{{ default_subdomain }}"
       dns_servers:
       - "{{ openshift_cloudprovider_vsphere_vm_dns }}"
-      dns_suffix: "{{ osm_default_subdomain }}"
+      dns_suffix: "{{ default_subdomain }}"
       hostname: "{{ hostvars[item].inventory_hostname }}"
   with_items: "{{ groups['haproxy'] }}"

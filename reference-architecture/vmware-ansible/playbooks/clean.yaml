@@ -24,32 +24,6 @@
         folder: "{{ openshift_cloudprovider_vsphere_datacenter }}/vm/{{ openshift_cloudprovider_vsphere_folder }}"
         state: absent
         force: true
-      with_items: "{{ groups['nodes'] }}"
-
-#- hosts: localhost
-#  user: root
-#  become: false
-#  ignore_errors: yes
- # vars_files:
-  #  - vars/main.yaml
-  #tasks:
-  #  - name: "Remove resource pool on vCenter"
-  #    vmware_resource_pool:
-  #      hostname: "{{ openshift_cloudprovider_vsphere_host }}"
-  #      username: "{{ openshift_cloudprovider_vsphere_username }}"
-  #      password: "{{ openshift_cloudprovider_vsphere_password }}"
-  #      validate_certs: False
-  #      datacenter: "{{ openshift_cloudprovider_vsphere_datacenter }}"
-  #      cluster: "{{ openshift_cloudprovider_vsphere_cluster }}"
-  #      resource_pool: "{{ openshift_cloudprovider_vsphere_resource_pool }}"
-  #      state: "absent"
-  #  - name: "Remove folder on vCenter"
-  #    vmware_folder:
-  #      hostname: "{{ openshift_cloudprovider_vsphere_host }}"
-  #      username: "{{ openshift_cloudprovider_vsphere_username }}"
-  #      password: "{{ openshift_cloudprovider_vsphere_password }}"
-  #      validate_certs: False
-  #      datacenter: "{{ openshift_cloudprovider_vsphere_datacenter }}"
-  #      cluster: "{{ openshift_cloudprovider_vsphere_cluster }}"
-  #      folder: "{{ openshift_cloudprovider_vsphere_folder }}"
-  #      state: "absent"
+      with_items: 
+      - "{{ groups['nodes'] }}"
+      - "{{ groups['storage'] }}"

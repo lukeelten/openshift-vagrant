@@ -1,0 +1,26 @@
+---
+- name: Create Route53 external zone
+  route53_zone:
+    comment: "{{ clusterid }}.{{ domain }}"
+    state: present
+    vpc_region: "{{ region }}"
+    zone: "{{ clusterid }}.{{ domain }}"
+  register: r53zoneext
+
+- name: Create Route53 internal zone
+  route53_zone:
+    comment: "{{ clusterid }}.{{ domain }}"
+    state: present
+    vpc_id: "{{ vpc.vpc.id }}"
+    vpc_region: "{{ region }}"
+    zone: "{{ clusterid }}.{{ domain }}"
+  register: r53zoneint
+
+- name: 'Set fact: arg for lookup query'
+  set_fact:
+    args:
+      id: "{{ r53zoneext.result.zone_id }}"
+
+- name: Fetch SOA records Route53 external zone
+  set_fact:
+    ns: "{{ lookup('route53_namservers', args).split(',') }}"

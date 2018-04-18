@@ -26,15 +26,8 @@ aws ec2 create-tags --resources $(echo $ocp_awssg_infra | jq -r '.GroupId') --ta
 aws ec2 create-tags --resources $(echo $ocp_awssg_node | jq -r '.GroupId') --tags Key=Name,Value=Node
 aws ec2 create-tags --resources $(echo $ocp_awssg_node | jq -r '.GroupId') --tags Key=clusterid,Value=${ocp_clusterid}
 
-if [ "$ocp_route53_extzone" ]; then
-  echo "Domain $ocp_domain will need delegation set to the following nameservers"
-  echo $ocp_route53_extzone | jq -r '.DelegationSet.NameServers[]'
-fi
-
-echo
-echo
-
-echo "Add the following to ~/.ssh/config
+echo "Land clusterid SSH config (${ocp_clusterid})"
+cat >> ~/.ssh/config-${ocp_clusterid} < EOF
 Host bastion
   HostName                 $(echo $ocp_eip0 | jq -r '.PublicIp')
   User                     ec2-user
@@ -56,39 +49,67 @@ Host *.ec2.internal
   StrictHostKeyChecking    no
   CheckHostIP              no
   IdentityFile             ~/.ssh/${ocp_clusterid}"
-
-echo
-echo
-
-echo "Add the following to openshift-ansible installer inventory"
-echo "openshift_hosted_registry_storage_s3_accesskey=$(echo $ocp_iamuser_accesskey | jq -r '.AccessKey.AccessKeyId')"
-echo "openshift_hosted_registry_storage_s3_secretkey=$(echo $ocp_iamuser_accesskey | jq -r '.AccessKey.SecretAccessKey')"
-
-cat >> ~/.ssh/examplerefarch-s3user_access_key << EOF
-<!-- BEGIN ANSIBLE MANAGED BLOCK -->
-openshift_hosted_registry_storage_s3_accesskey=$(echo $ocp_iamuser_accesskey | jq -r '.AccessKey.AccessKeyId')
-openshift_hosted_registry_storage_s3_secretkey=$(echo $ocp_iamuser_accesskey | jq -r '.AccessKey.SecretAccessKey')
-<!-- END ANSIBLE MANAGED BLOCK -->
 EOF
-echo "IAM s3 user access key stored in ~/.ssh/${ocp_clusterid}-s3user_access_key"
-echo "Add the following to openshift-ansible installer inventory"
-cat ~/.ssh/${ocp_clusterid}-s3user_access_key | grep -v '<!--'
 
 echo
 echo
 
-echo "Add the following to openshift-ansible installer inventory
+echo "NOTICE!  Update domain delegation (~/.ssh/config-${ocp_clusterid}-domaindelegation)"
+Domain $ocp_domain will need delegation set to the following nameservers"
+
+$(echo $ocp_route53_extzone | jq -r '.DelegationSet.NameServers[]')
+EOF
+
+echo
+echo
+
+echo "NOTICE!  Update openshift-ansible installer inventory with cloudprovider_kind and credentials (~/.ssh/config-${ocp_clusterid}-ocpinstallercpk)"
+cat >> ~/.ssh/config-${ocp_clusterid}-ocpinstallercpk << EOF
+Update openshift-ansible installer inventory with cloudprovider_kind=aws and credentials
+
+openshift_cloudprovider_kind=aws
+openshift_clusterid={{ clusterid }}
+openshift_cloudprovider_aws_access_key=
+openshift_cloudprovider_aws_secret_key=
+EOF
+
+echo
+echo
+
+echo "NOTICE!  Update openshift-ansible installer inventory with Registry S3 storage credentials (~/.ssh/config-${ocp_clusterid}-ocpinstallers3creds)"
+cat ~/.ssh/config-${ocp_clusterid}-ocpinstallers3creds < EOF
+Add the following to openshift-ansible installer inventory registry storage section
+
+openshift_hosted_registry_storage_kind=object
+openshift_hosted_registry_storage_provider=s3
+openshift_hosted_registry_storage_s3_accesskey=$(echo $ocp_s3user_accesskey | jq -r '.AccessKey.AccessKeyId')
+openshift_hosted_registry_storage_s3_secretkey=$(echo $ocp_s3user_accesskey | jq -r '.AccessKey.SecretAccessKey')
+openshift_hosted_registry_storage_s3_bucket=${ocp_clusterid}-registry
+openshift_hosted_registry_storage_s3_region=${region}
+EOF
+
+echo
+echo
+
+echo "NOTICE!  Update openshift-ansible installer inventory with endpoint urls (~/.ssh/config-${ocp_clusterid}-ocpinstallerurls)"
+cat >> ~/.ssh/config-${ocp_clusterid}-ocpinstallerurls << EOF
+EOF
+
+echo
+echo
+
+echo "NOTICE!  Update openshift-ansible installer inventory with OCP hosts (./inventory/hosts-${ocp_clusterid})"
+cat >> hosts-${ocp_clusterid} < EOF
 [masters]
 $(echo $ocp_hostinv | jq -r '.masters[]')
 
 [etcd]
-$(echo $ocp_hostinv | jq -r '.etcd[]'))
-
-[routers]
-$(echo $ocp_hostinv | jq -r '.routers[]')
+masters
 
 [nodes]
 $(echo $ocp_hostinv | jq -r '.nodes[]')
+$(echo $ocp_hostinv | jq -r '.routers[]')
 
 [nodes:children]
-masters"
+masters
+EOF

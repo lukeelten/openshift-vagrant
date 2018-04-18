@@ -41,15 +41,15 @@ if [ ! "$ocp_keypair" ]; then
                        --public-key-material file://~/.ssh/$ocp_clusterid.pub \
                        )
 fi
-if [ ! "$ocp_iamuser" ]; then
-  export ocp_iamuser=$(aws iam create-user --user-name ${ocp_clusterid}-registry)
+if [ ! "$ocp_s3user" ]; then
+  export ocp_s3user=$(aws iam create-user --user-name ${ocp_clusterid}-registry)
   sleep 30
   aws iam attach-user-policy \
     --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess \
     --user-name ${ocp_clusterid}-registry
 fi
-if [ ! "$ocp_iamuser_accesskey" ]; then
-  export ocp_iamuser_accesskey=$(aws iam create-access-key --user-name ${ocp_clusterid}-registry)
+if [ ! "$ocp_s3user_accesskey" ]; then
+  export ocp_s3user_accesskey=$(aws iam create-access-key --user-name ${ocp_clusterid}-registry)
 fi
 
 if [ ! "$ocp_aws_s3bucket" ]; then
@@ -63,10 +63,56 @@ if [ ! "$ocp_aws_s3bucket" ]; then
       \"Action\": \"s3:*\", \
       \"Effect\": \"Allow\", \
       \"Principal\": { \
-        \"AWS\": \"$(echo $ocp_iamuser | jq -r '.User.Arn')\" \
+        \"AWS\": \"$(echo $ocp_s3user | jq -r '.User.Arn')\" \
       }, \
       \"Resource\": \"arn:aws:s3:::$(echo $ocp_aws_s3bucket | jq -r '.Location' | sed -e 's/^\///g')\" \
     } \
   ] \
 }"
+fi
+
+if [ ! "$ocp_iamuser" ]; then
+  export ocp_iamuser=$(aws iam create-user --user-name ${ocp_clusterid}-admin)
+  sleep 30
+cat > .iamuser_policy << EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "1",
+            "Action": [
+                "ec2:DescribeVolume",
+                "ec2:CreateVolume",
+                "ec2:CreateTags",
+                "ec2:DescribeInstance",
+                "ec2:AttachVolume",
+                "ec2:DetachVolume",
+                "ec2:DeleteVolume",
+                "ec2:DescribeSubnets",
+                "ec2:CreateSecurityGroup",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeRouteTables",
+                "ec2:AuthorizeSecurityGroupIngress",
+                "ec2:RevokeSecurityGroupIngress",
+                "elasticloadbalancing:DescribeTags",
+                "elasticloadbalancing:CreateLoadBalancerListeners",
+                "elasticloadbalancing:ConfigureHealthCheck",
+                "elasticloadbalancing:DeleteLoadBalancerListeners",
+                "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+                "elasticloadbalancing:DescribeLoadBalancers",
+                "elasticloadbalancing:CreateLoadBalancer",
+                "elasticloadbalancing:DeleteLoadBalancer",
+                "elasticloadbalancing:ModifyLoadBalancerAttributes",
+                "elasticloadbalancing:DescribeLoadBalancerAttributes"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:s3:::{{ clusterid }}-admin"
+        }
+    ]
+}
+EOF
+  aws iam create-policy --policy-name Admin --policy-document file://.iamuser_policy
+  aws iam attach-user-policy \
+    --policy-arn arn:aws:iam::aws:policy/Admin \
+    --user-name ${ocp_clusterid}-admin
 fi

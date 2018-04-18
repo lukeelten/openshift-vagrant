@@ -1,0 +1,106 @@
+---
+- name: "Create AWS SecurityGroups Rules (Infra)"
+  ec2_group:
+    name: "infra"
+    description: "infra"
+    purge_rules: true
+    purge_rules_egress: true
+    region: "{{ region }}"
+    vpc_id: "{{ vpc.vpc.id }}"
+    rules:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 9200
+        to_port: 9200
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 9300
+        to_port: 9300
+        cidr_ip: 0.0.0.0/0
+
+- name: "Create AWS SecurityGroups Rules (Master)"
+  ec2_group:
+    name: "master"
+    description: "master"
+    purge_rules: true
+    purge_rules_egress: true
+    region: "{{ region }}"
+    vpc_id: "{{ vpc.vpc.id }}"
+    rules:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        group_name: "master"
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        group_name: "master"
+      - proto: tcp
+        from_port: 2379
+        to_port: 2380
+        group_name: "master"
+      - proto: tcp
+        from_port: 2379
+        to_port: 2380
+        group_name: "node"
+      - proto: tcp
+        from_port: 24224
+        to_port: 24224
+        group_name: "master"
+      - proto: udp
+        from_port: 24224
+        to_port: 24224
+        group_name: "master"
+
+- name: "Create AWS SecurityGroups Rules (Node)"
+  ec2_group:
+    name: "node"
+    description: "node"
+    purge_rules: true
+    purge_rules_egress: true
+    region: "{{ region }}"
+    vpc_id: "{{ vpc.vpc.id }}"
+    rules:
+      - proto: icmp
+        from_port: 8
+        to_port: -1
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        group_name: "Bastion"
+      - proto: tcp
+        from_port: 53
+        to_port: 53
+        group_name: "node"
+      - proto: tcp
+        from_port: 2049
+        to_port: 2049
+        group_name: "node"
+      - proto: tcp
+        from_port: 8053
+        to_port: 8053
+        group_name: "node"
+      - proto: tcp
+        from_port: 10250
+        to_port: 10250
+        group_name: "node"
+      - proto: udp
+        from_port: 53
+        to_port: 53
+        group_name: "node"
+      - proto: udp
+        from_port: 4789
+        to_port: 4789
+        group_name: "node"
+      - proto: udp
+        from_port: 8053
+        to_port: 8053
+        group_name: "node"

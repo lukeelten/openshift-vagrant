@@ -1,0 +1,254 @@
+---
+- name: Create EC2 bastion instance
+  ec2:
+    assign_public_ip: yes
+    count_tag:
+      Name: "bastion"
+    exact_count: 1
+    group: [
+      "Bastion"
+    ]
+    instance_type: "{{ ec2_type_bastion }}"
+    image: "{{ ec2ami }}"
+    instance_tags:
+      Name: "bastion"
+      Clusterid: "{{ clusterid }}"
+      ami: "{{ ec2ami }}"
+      "kubernetes.io/cluster/{{ clusterid }}": "{{ clusterid }}"
+    key_name: "{{ clusterid }}"
+    monitoring: no
+    region: "{{ region }}"
+    termination_protection: no
+    user_data: "{{ lookup('file', ( playbook_dir + '/roles/aws/files/ec2_userdata_bastion.sh') ) }}"
+    volumes:
+      - device_name: /dev/sda1
+        volume_type: gp2
+        volume_size: 25
+        delete_on_termination: true
+    vpc_subnet_id: "{{ subnet_routing.results.0.subnet.id }}"
+    wait: yes
+  retries: 3
+  delay: 3
+  register: ec2bastion
+
+- include_tasks: tag.yaml
+  vars:
+    - resource: "{{ item.id }}"
+    - tagss: "clusterid={{ clusterid }}, ami={{ ec2ami }}"
+  with_items: "{{ ec2bastion.tagged_instances }}"
+
+- include_tasks: tag.yaml
+  vars:
+    - resource: "{{ item.block_device_mapping['/dev/sda1'].volume_id }}"
+    - tagss: "Name={{ item.id }}-rootvol, clusterid={{ clusterid }}, "
+  with_items: "{{ ec2bastion.tagged_instances }}"
+
+- name: Create EIP instance for EC2 / bastion
+  ec2_eip:
+    device_id: "{{ ec2bastion.tagged_instances.0.id }}"
+    in_vpc: yes
+    region: "{{ region }}"
+    state: present
+  retries: 3
+  register: eipbastion
+
+- name: Create EC2 master instances
+  ec2:
+    assign_public_ip: no
+    count_tag:
+      Name: "{{ item.name }}"
+    exact_count: 1
+    group: [
+      "SSH",
+      "master",
+      "node"
+    ]
+    instance_type: "{{ ec2_type_master }}"
+    image: "{{ ec2ami }}"
+    instance_tags:
+      Name: "{{ item.name }}"
+    key_name: "{{ clusterid }}"
+    monitoring: no
+    region: "{{ region }}"
+    termination_protection: no
+    user_data: "{{ lookup('file', ( playbook_dir + '/roles/aws/files/ec2_userdata_master.sh') ) }}"
+    volumes:
+      - device_name: /dev/sda1
+        volume_type: gp2
+        volume_size: 100
+      - device_name: /dev/xvdb
+        volume_type: gp2
+        volume_size: 100
+      - device_name: /dev/xvdc
+        volume_type: gp2
+        volume_size: 100
+      - device_name: /dev/xvdd
+        volume_type: gp2
+        volume_size: 100
+        delete_on_termination: true
+    vpc_subnet_id: "{{ item.subnet }}"
+    wait: yes
+  with_items:
+    - name: "master1"
+      subnet: "{{ subnet_internal.results.0.subnet.id }}"
+    - name: "master2"
+      subnet: "{{ subnet_internal.results.1.subnet.id }}"
+    - name: "master3"
+      subnet: "{{ subnet_internal.results.2.subnet.id }}"
+  retries: 3
+  delay: 3
+  register: ec2master
+
+- include_tasks: tag.yaml
+  vars:
+    - resource: "{{ item.tagged_instances[0].id }}"
+    - tagss: "clusterid={{ clusterid }}, ami={{ ec2ami }}, kubernetes.io/cluster/{{ clusterid }}={{ clusterid }}, host-type=master, sub-host-type=default"
+  with_items: "{{ ec2master.results }}"
+
+- include_tasks: tag.yaml
+  vars:
+    - resource: "{{ item.tagged_instances[0].block_device_mapping['/dev/sda1'].volume_id }}"
+    - tagss: "Name={{ item.tagged_instances[0].id }}-rootvol, clusterid={{ clusterid }}, "
+  with_items: "{{ ec2master.results }}"
+
+- include_tasks: tag.yaml
+  vars:
+    - resource: "{{ item.tagged_instances[0].block_device_mapping['/dev/xvdb'].volume_id }}"
+    - tagss: "Name={{ item.tagged_instances[0].id }}-xvdb, clusterid={{ clusterid }}, "
+  with_items: "{{ ec2master.results }}"
+
+- include_tasks: tag.yaml
+  vars:
+    - resource: "{{ item.tagged_instances[0].block_device_mapping['/dev/xvdc'].volume_id }}"
+    - tagss: "Name={{ item.tagged_instances[0].id }}-xvdc, clusterid={{ clusterid }}, "
+  with_items: "{{ ec2master.results }}"
+
+- include_tasks: tag.yaml
+  vars:
+    - resource: "{{ item.tagged_instances[0].block_device_mapping['/dev/xvdd'].volume_id }}"
+    - tagss: "Name={{ item.tagged_instances[0].id }}-xvdd, clusterid={{ clusterid }}, "
+  with_items: "{{ ec2master.results }}"
+
+- name: Create EC2 infra instances
+  ec2:
+    assign_public_ip: no
+    count_tag:
+      Name: "{{ item.name }}"
+    exact_count: 1
+    group: [
+      "SSH",
+      "infra",
+      "node"
+    ]
+    instance_type: "{{ ec2_type_infra }}"
+    image: "{{ ec2ami }}"
+    instance_tags:
+      Name: "{{ item.name }}"
+    key_name: "{{ clusterid }}"
+    monitoring: no
+    region: "{{ region }}"
+    termination_protection: no
+    user_data: "{{ lookup('file', ( playbook_dir + '/roles/aws/files/ec2_userdata_node.sh') ) }}"
+    volumes:
+      - device_name: /dev/sda1
+        volume_type: gp2
+        volume_size: 100
+      - device_name: /dev/xvdb
+        volume_type: gp2
+        volume_size: 100
+    vpc_subnet_id: "{{ item.subnet }}"
+    wait: yes
+  with_items:
+    - name: "infra1"
+      subnet: "{{ subnet_internal.results.0.subnet.id }}"
+    - name: "infra2"
+      subnet: "{{ subnet_internal.results.1.subnet.id }}"
+    - name: "infra3"
+      subnet: "{{ subnet_internal.results.2.subnet.id }}"
+  retries: 3
+  delay: 3
+  register: ec2infra
+
+- include_tasks: tag.yaml
+  vars:
+    - resource: "{{ item.tagged_instances[0].id }}"
+    - tagss: "clusterid={{ clusterid }}, ami={{ ec2ami }}, kubernetes.io/cluster/{{ clusterid }}={{ clusterid }}, host-type=node, sub-host-type=infra"
+  with_items: "{{ ec2infra.results }}"
+
+- include_tasks: tag.yaml
+  vars:
+    - resource: "{{ item.tagged_instances[0].block_device_mapping['/dev/sda1'].volume_id }}"
+    - tagss: "Name={{ item.tagged_instances[0].id }}-rootvol, clusterid={{ clusterid }}, "
+  with_items: "{{ ec2infra.results }}"
+
+- include_tasks: tag.yaml
+  vars:
+    - resource: "{{ item.tagged_instances[0].block_device_mapping['/dev/xvdb'].volume_id }}"
+    - tagss: "Name={{ item.tagged_instances[0].id }}-xvdb, clusterid={{ clusterid }}, "
+  with_items: "{{ ec2infra.results }}"
+
+- name: Create EC2 node instances
+  ec2:
+    assign_public_ip: no
+    count_tag:
+      Name: "{{ item.name }}"
+    exact_count: 1
+    group: [
+      "SSH",
+      "node"
+    ]
+    instance_type: "{{ ec2_type_node }}"
+    image: "{{ ec2ami }}"
+    instance_tags:
+      Name: "{{ item.name }}"
+    key_name: "{{ clusterid }}"
+    monitoring: no
+    region: "{{ region }}"
+    termination_protection: no
+    user_data: "{{ lookup('file', ( playbook_dir + '/roles/aws/files/ec2_userdata_node.sh') ) }}"
+    volumes:
+      - device_name: /dev/sda1
+        volume_type: gp2
+        volume_size: 100
+      - device_name: /dev/xvdb
+        volume_type: gp2
+        volume_size: 100
+      - device_name: /dev/xvdc
+        volume_type: gp2
+        volume_size: 100
+    vpc_subnet_id: "{{ item.subnet }}"
+    wait: yes
+  with_items:
+    - name: "node1"
+      subnet: "{{ subnet_internal.results.0.subnet.id }}"
+    - name: "node2"
+      subnet: "{{ subnet_internal.results.1.subnet.id }}"
+    - name: "node3"
+      subnet: "{{ subnet_internal.results.2.subnet.id }}"
+  retries: 3
+  delay: 3
+  register: ec2node
+
+- include_tasks: tag.yaml
+  vars:
+    - resource: "{{ item.tagged_instances[0].id }}"
+    - tagss: "clusterid={{ clusterid }}, ami={{ ec2ami }}, kubernetes.io/cluster/{{ clusterid }}={{ clusterid }}, host-type=node, sub-host-type=compute"
+  with_items: "{{ ec2node.results }}"
+
+- include_tasks: tag.yaml
+  vars:
+    - resource: "{{ item.tagged_instances[0].block_device_mapping['/dev/sda1'].volume_id }}"
+    - tagss: "Name={{ item.tagged_instances[0].id }}-rootvol, clusterid={{ clusterid }}, "
+  with_items: "{{ ec2node.results }}"
+
+- include_tasks: tag.yaml
+  vars:
+    - resource: "{{ item.tagged_instances[0].block_device_mapping['/dev/xvdb'].volume_id }}"
+    - tagss: "Name={{ item.tagged_instances[0].id }}-xvdb, clusterid={{ clusterid }}, "
+  with_items: "{{ ec2node.results }}"
+
+- include_tasks: tag.yaml
+  vars:
+    - resource: "{{ item.tagged_instances[0].block_device_mapping['/dev/xvdc'].volume_id }}"
+    - tagss: "Name={{ item.tagged_instances[0].id }}-xvdc, clusterid={{ clusterid }}, "
+  with_items: "{{ ec2node.results }}"

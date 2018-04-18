@@ -1,0 +1,14 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "1",
+            "Action": [
+                "s3:*"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:s3:::{{ clusterid }}-registry"
+            "Resource": "arn:aws:s3:::{{ clusterid }}-registry/*"
+        }
+    ]
+}

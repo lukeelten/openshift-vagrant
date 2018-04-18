@@ -1,0 +1,46 @@
+---
+- name: "Land SSH config for clusterid"
+  blockinfile:
+    path: "~/.ssh/config-{{ clusterid }}"
+    create: yes
+    marker: "#<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    content: |
+      {{ lookup('template', ( playbook_dir + '/roles/aws/templates/ssh_config.j2') ) }}
+
+- name: "Land domain delegation for clusterid"
+  blockinfile:
+    path: "~/.ssh/config-{{ clusterid }}-domaindelegation"
+    create: yes
+    marker: "#<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    content: |
+      {{ lookup('template', ( playbook_dir + '/roles/aws/templates/domaindelegation.j2') ) }}
+
+- name: "Land openshift-ansible installer cloudprovider_kind and credentials"
+  blockinfile:
+    path: "~/.ssh/config-{{ clusterid }}-ocpinstallercpk"
+    create: yes
+    marker: "#<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    content: |
+      {{ lookup('template', ( playbook_dir + '/roles/aws/templates/ocpinstallercpk.j2') ) }}
+
+- name: "Land openshift-ansible installer registry storage kind and credentials"
+  blockinfile:
+    path: "~/.ssh/config-{{ clusterid }}-ocpinstallers3"
+    create: yes
+    marker: "#<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    content: |
+      {{ lookup('template', ( playbook_dir + '/roles/aws/templates/ocpinstallers3.j2') ) }}
+
+- name: "Land openshift-ansible installer master hostnames"
+  blockinfile:
+    path: "~/.ssh/config-{{ clusterid }}-ocpinstallerurls"
+    create: yes
+    marker: "#<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    content: |
+      {{ lookup('template', ( playbook_dir + '/roles/aws/templates/ocpinstallerurls.j2') ) }}
+
+- name: "Land openshift-ansible installer host inventory"
+  template:
+    dest: "~/.ssh/config-{{ clusterid }}-ocpinstallerhosts"
+    trim_blocks: no
+    src: "{{ playbook_dir }}/roles/aws/templates/ocpinstallerhosts.j2"

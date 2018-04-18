@@ -1,0 +1,9 @@
+---
+- name: Create IGW
+  ec2_vpc_igw:
+    region: "{{ region }}"
+    state: present
+    vpc_id: "{{ vpc.vpc.id }}"
+  retries: 3
+  delay: 3
+  register: igw

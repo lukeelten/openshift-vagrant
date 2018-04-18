@@ -14,7 +14,6 @@ openshift_release="3.9"
 
 deployment_type=openshift-enterprise
 os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
-
 openshift_override_hostname_check=true
 
 load_balancer_hostname=haproxy.stretch.e2e.bos.redhat.com

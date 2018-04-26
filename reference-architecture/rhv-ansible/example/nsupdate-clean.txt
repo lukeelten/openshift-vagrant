@@ -105,15 +105,17 @@ server localhost
 zone example.com
 update delete *.apps.example.com A
 update delete openshift.example.com A
-update delete openshift-master.example.com A
-update delete openshift-master.example.com A
-update delete openshift-master-0.example.com A
-update delete openshift-master-1.example.com A
-update delete openshift-master-2.example.com A
-update delete openshift-infra-0.example.com A
-update delete openshift-infra-1.example.com A
-update delete openshift-node-0.example.com A
-update delete openshift-node-1.example.com A
-update delete openshift-lb.example.com A
+update delete master.example.com A
+update delete master.example.com A
+update delete master0.example.com A
+update delete master1.example.com A
+update delete master2.example.com A
+update delete infra0.example.com A
+update delete infra1.example.com A
+update delete infra2.example.com A
+update delete app0.example.com A
+update delete app1.example.com A
+update delete app2.example.com A
+update delete lb.example.com A
 show
 send

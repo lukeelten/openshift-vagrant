@@ -1,6 +1,6 @@
 ---
 - name: Unregister VMs
-  gather_facts: false
+  gather_facts: true
   hosts:
     - tag_openshift_master
     - tag_openshift_infra
@@ -16,7 +16,7 @@
   gather_facts: false
 
   vars_files:
-    - vars/ovirt-37-vars.yaml
+    - vars/ovirt-39-vars.yaml
 
   pre_tasks:
     - name: Log in to oVirt

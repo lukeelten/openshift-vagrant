@@ -1,21 +1,21 @@
 #!/bin/bash
 VARIANT=${1:-39}
-if [ -f "test/ocp-vars.yaml.$VARIANT" ]
+if [ -f "example/ocp-vars.yaml.$VARIANT" ]
 then
-    VARS="-e@test/ocp-vars.yaml.$VARIANT"
+    VARS="-e@example/ocp-vars.yaml.$VARIANT -e@~/vault.yaml"
 else
-    VARS="-e@test/ocp-vars.yaml"
+    VARS="-e@example/ocp-vars.yaml -e@~/vault.yaml"
 fi
 
-if [ -f "test/ovirt-${VARIANT}-infra.yaml" ]
+if [ -f "example/ovirt-${VARIANT}-infra.yaml" ]
 then
-    INFRA="test/ovirt-${VARIANT}-infra.yaml"
+    INFRA="example/ovirt-${VARIANT}-infra.yaml"
 else
     INFRA="playbooks/ovirt-vm-infra.yaml"
 fi
 
-ansible-playbook $VARS test/uninstall.yaml 
-ansible-playbook $VARS $INFRA
+ansible-playbook $VARS example/uninstall.yaml 
+ansible-playbook -i example/inventory.yaml $VARS $INFRA
 if [ "$?" != "0" ]; then
   echo "Infrastructure deploy broke"
   exit
@@ -30,10 +30,15 @@ if [ "$?" != "0" ]; then
   echo "DNS update broke"
   exit
 fi
-ansible-playbook -i test/inventory.yaml $VARS ../../../openshift-ansible/playbooks/prerequisites.yml
+ansible-playbook -i example/inventory.yaml -e@~/vault.yaml example/node-preparation.yaml
+if [ "$?" != "0" ]; then
+  echo "Node preparation broke"
+  exit
+fi
+ansible-playbook -i example/inventory.yaml -e@~/vault.yaml /usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml
 if [ "$?" != "0" ]; then
   echo "Prerequisites installation broke"
   exit
 fi
-ansible-playbook -i test/inventory.yaml $VARS ../../../openshift-ansible/playbooks/deploy_cluster.yml
+ansible-playbook -i example/inventory.yaml -e@~/vault.yaml /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml
 

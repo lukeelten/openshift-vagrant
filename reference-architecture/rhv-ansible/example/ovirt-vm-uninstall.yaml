@@ -5,7 +5,7 @@
   gather_facts: false
 
   vars_files:
-    - ../playbooks/vars/ovirt-infra-vars.yaml
+    - vars/ovirt-39-vars.yaml
 
   pre_tasks:
     - name: Log in to oVirt

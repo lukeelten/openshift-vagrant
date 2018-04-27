@@ -55,7 +55,7 @@
     - name: Create NSUPDATE wildcard A entry
       lineinfile:
         path: ../inventory.nsupdate
-        line: "update add *.{{app_dns_prefix}}.{{public_hosted_zone}} 86400 A {{lb_ip}}"
+        line: "update add *.{{ openshift_master_default_subdomain }} 86400 A {{lb_ip}}"
         state: present
       when: nsupdate_server is defined
     - name: Create NSUPDATE public hostname entry

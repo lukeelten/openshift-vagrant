@@ -13,3 +13,8 @@
     - docker-storage-setup
     - openshift-volume-quota
   ignore_errors: yes
+
+- hosts: masters
+  roles:
+    - master-prerequisites
+    - etcd-storage

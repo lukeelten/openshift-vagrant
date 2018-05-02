@@ -58,6 +58,8 @@ all:
         openshift_node_local_quota_per_fsgroup: 512Mi
         openshift_use_system_containers: False
 
+        # Pod Networking
+        os_sdn_network_plugin_name: redhat/openshift-ovs-networkpolicy
         # DNS
         app_dns_prefix: apps
         public_hosted_zone: example.com

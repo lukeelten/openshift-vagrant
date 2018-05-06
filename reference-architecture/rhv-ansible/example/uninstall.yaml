@@ -2,10 +2,10 @@
 - name: Unregister VMs
   gather_facts: true
   hosts:
-    - tag_openshift_master
-    - tag_openshift_infra
-    - tag_openshift_node
-    - tag_openshift_lb
+    - masters
+    - infras
+    - nodes
+    - lb
   roles:
     - rhsm-unregister
   ignore_errors: yes

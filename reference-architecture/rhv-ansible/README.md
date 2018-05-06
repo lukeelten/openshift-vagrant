@@ -58,7 +58,7 @@ $ curl --output ca.pem 'http://engine.example.com/ovirt-engine/services/pki-reso
 The oVirt-ansible role, oVirt.image-template requires a URL to download a QCOW2 KVM image to use as
 the basis for the VMs on which OpenShift will be installed.
 
-If a CentOS image is desired, a suitable URL is commented out in the variable file, `ocp-vars.yaml`.
+If a CentOS image is desired, a suitable URL is commented out in the static inventory under `localhost`.
 
 If a RHEL image is preferred, log in at <https://access.redhat.com/>, navigate to Downloads, Red Hat Enterprise Linux,
 select the latest release (at this time, 7.5), and copy the URL for "KVM Guest Image". If possible, download
@@ -77,33 +77,32 @@ For more information, please see the
 
 ### Populate Values
 
-Four files will need to be copied from examples and edited:
+Three files will need to be copied from examples and edited:
 
 * As mentioned above, protected values should be created in an ansible vault, e.g. [`vault.yaml`](vault.yaml) in the user's home directory. A template is provided in the examples directory. This will hold RHV credentials and, in the case of RHEL hosts, subscription credentials.
 
-* [`ocp-vars.yaml`](ocp-vars.yaml) should be checked for blank entries and filled out. Of primary importance are the DNS entries
-
 * The [`ovirt-infra-vars.yaml`](ovirt-infra-vars.yaml) file defines the virtual machines created by the `ovirt-vm-infra.yaml` playbook. The host names created here must match those in the static inventory.
 
-* A copy of a static inventory is provided as [yaml](example/inventory.yaml) or [ini](example/inventory), populated with hosts in the example.com domain along with variables pertaining to the reference architecture. 
+* A copy of a static inventory is provided as [yaml](example/inventory.yaml) or [ini](example/inventory), populated with hosts in the example.com domain along with variables pertaining to the reference architecture. This inventory should be added to /etc/ansible/hosts (or added manually using the -i flag during each `ansible-playbook` run).
 
 ### Set up virtual machines in RHV
 From the `reference-architecture/rhv-ansible` directory, run
 
 ```
-ansible-playbook -e@ocp-vars.yaml -e@~/vault.yaml playbooks/ovirt-vm-infra.yaml
+ansible-playbook -e@~/vault.yaml playbooks/ovirt-vm-infra.yaml
 ```
-### Optionally output DNS entries and update DNS records with dynamically provisioned information
+### Optionally output DNS entries and update DNS records with dynamically provisioned information (Note the use of two inventories here, localhost variables like `openshift_master_default_subdomain` are required to form the output files)
 
 ```
-ansible-playbook -e@ocp-vars.yaml -e@~/vault.yaml playbooks/output-dns.yaml
+ansible-playbook -e@~/vault.yaml -i /etc/ansible/hosts -i inventory playbooks/output-dns.yaml
+
 ```
 
 ### Set up OpenShift Container Platform on the VMs from the previous step
 
 ```
-ansible-playbook -e@~/vault.yaml -i inventory.yaml /usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml 
+ansible-playbook -e@~/vault.yaml /usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml
 
-ansible-playbook -e@~/vault.yaml -i inventory.yaml /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml
+ansible-playbook -e@~/vault.yaml /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml
 ```
 

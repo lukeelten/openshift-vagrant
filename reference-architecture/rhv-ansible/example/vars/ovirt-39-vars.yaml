@@ -11,7 +11,6 @@ data_center_name: Default
 # VM infra
 ##########################
 template_cluster: "{{ rhv_cluster }}"
-template_name: centos7
 template_memory: 8GiB
 template_cpu: 1
 template_disk_storage: "{{ rhv_data_storage }}"

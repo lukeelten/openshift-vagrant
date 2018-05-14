@@ -7,6 +7,8 @@
     dest: ~/openshift-ansible
     force: yes
     update: yes
+    recursive: yes
+    version: openshift-ansible-3.9.29-1
   become: yes
   become_user: vagrant
 - package:

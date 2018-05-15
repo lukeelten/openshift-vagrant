@@ -1,0 +1,110 @@
+---
+- name: Create ELB ( master internet-facing endpoint )
+  ec2_elb_lb:
+    cross_az_load_balancing: "yes"
+    health_check:
+      ping_protocol: https
+      ping_port: 443
+      ping_path: "/api"
+      response_timeout: 2
+      interval: 5
+      unhealthy_threshold: 2
+      healthy_threshold: 3
+    listeners:
+      - protocol: tcp
+        load_balancer_port: 443
+        instance_protocol: tcp
+        instance_port: 443
+    name: "{{ clusterid }}-master-external"
+    region: "{{ region }}"
+    scheme: internet-facing
+    security_group_names:
+      - "master"
+    state: present
+    subnets:
+      - "{{ subnet_routing.results.0.subnet.id }}"
+      - "{{ subnet_routing.results.1.subnet.id }}"
+      - "{{ subnet_routing.results.2.subnet.id }}"
+    tags:
+      Name: "{{ clusterid }}-master-external"
+      Clusterif: "{{ clusterid }}"
+  retries: 3
+  delay: 3
+  register: elbextmaster
+
+- name: Create ELB ( master internal endpoint )
+  ec2_elb_lb:
+    cross_az_load_balancing: "yes"
+    health_check:
+      ping_protocol: https
+      ping_port: 443
+      ping_path: "/api"
+      response_timeout: 2
+      interval: 5
+      unhealthy_threshold: 2
+      healthy_threshold: 3
+    listeners:
+      - protocol: tcp
+        load_balancer_port: 443
+        instance_protocol: tcp
+        instance_port: 443
+    name: "{{ clusterid }}-master-internal"
+    region: "{{ region }}"
+    scheme: internal
+    security_group_names:
+      - "master"
+    state: present
+    subnets:
+      - "{{ subnet_internal.results.0.subnet.id }}"
+      - "{{ subnet_internal.results.1.subnet.id }}"
+      - "{{ subnet_internal.results.2.subnet.id }}"
+    tags:
+      Name: "{{ clusterid }}-master-internal"
+      Clusterif: "{{ clusterid }}"
+  retries: 3
+  delay: 3
+  register: elbintmaster
+
+- name: Create ELB ( infra internet-facing endpoint )
+  ec2_elb_lb:
+    cross_az_load_balancing: "yes"
+    health_check:
+      ping_protocol: tcp
+      ping_port: 443
+      response_timeout: 2
+      interval: 5
+      unhealthy_threshold: 2
+      healthy_threshold: 2
+    listeners:
+      - protocol: tcp
+        load_balancer_port: 80
+        instance_protocol: tcp
+        instance_port: 80
+      - protocol: tcp
+        load_balancer_port: 443
+        instance_protocol: tcp
+        instance_port: 443
+      - protocol: tcp
+        load_balancer_port: 5000
+        instance_protocol: tcp
+        instance_port: 5000
+      - protocol: tcp
+        load_balancer_port: 9090
+        instance_protocol: tcp
+        instance_port: 9090
+    name: "{{ clusterid }}-infra-external"
+    region: "{{ region }}"
+    scheme: internet-facing
+    security_group_names:
+      - "infra"
+    state: present
+    subnets:
+      - "{{ subnet_routing.results.0.subnet.id }}"
+      - "{{ subnet_routing.results.1.subnet.id }}"
+      - "{{ subnet_routing.results.2.subnet.id }}"
+    tags:
+      Name: "{{ clusterid }}-infra-external"
+      Clusterid: "{{ clusterid }}"
+  retries: 3
+  delay: 3
+  register: elbextinfra

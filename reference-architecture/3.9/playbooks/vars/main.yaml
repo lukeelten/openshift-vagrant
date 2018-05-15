@@ -1,0 +1,26 @@
+---
+clusterid: "refarch"
+domain: "example.com"
+region: "us-east-1"
+credsprofile: "default"
+ssh_password: 'abc123'
+
+cidrvpc: "172.16.0.0/16"
+
+cidrsubnets_routing:
+  - 172.16.0.0/24
+  - 172.16.1.0/24
+  - 172.16.2.0/24
+
+cidrsubnets:
+  - 172.16.16.0/20
+  - 172.16.32.0/20
+  - 172.16.48.0/20
+
+ec2_type_bastion: "t2.medium"
+ec2_type_master: "m5.2xlarge"
+ec2_type_infra: "m5.2xlarge"
+ec2_type_node: "m5.2xlarge"
+ec2_type_cns: "m5.2xlarge"
+
+rhelrel: "rhel-7.5"

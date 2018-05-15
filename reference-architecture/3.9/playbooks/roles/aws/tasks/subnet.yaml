@@ -1,0 +1,38 @@
+---
+- name: Create AWS subnets (routing)
+  ec2_vpc_subnet:
+    az: "{{ item.az }}"
+    cidr: "{{ item.cidr }}"
+    region: "{{ region }}"
+    state: present
+    vpc_id: "{{ vpc.vpc.id }}"
+    wait: False
+  with_items:
+    - cidr: "{{ cidrsubnets_routing.0 }}"
+      az: "{{ vpc_subnet_azs.0 }}"
+    - cidr: "{{ cidrsubnets_routing.1 }}"
+      az: "{{ vpc_subnet_azs.1 }}"
+    - cidr: "{{ cidrsubnets_routing.2 }}"
+      az: "{{ vpc_subnet_azs.2 }}"
+  retries: 3
+  delay: 3
+  register: subnet_routing
+
+- name: Create AWS subnets (internal)
+  ec2_vpc_subnet:
+    az: "{{ item.az }}"
+    cidr: "{{ item.cidr }}"
+    region: "{{ region }}"
+    state: present
+    vpc_id: "{{ vpc.vpc.id }}"
+    wait: False
+  with_items:
+    - cidr: "{{ cidrsubnets.0 }}"
+      az: "{{ vpc_subnet_azs.0 }}"
+    - cidr: "{{ cidrsubnets.1 }}"
+      az: "{{ vpc_subnet_azs.1 }}"
+    - cidr: "{{ cidrsubnets.2 }}"
+      az: "{{ vpc_subnet_azs.2 }}"
+  retries: 3
+  delay: 3
+  register: subnet_internal

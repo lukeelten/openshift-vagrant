@@ -1,0 +1,15 @@
+---
+- name: Create NAT gateway
+  ec2_vpc_nat_gateway:
+    if_exist_do_not_create: yes
+    state: present
+    subnet_id: "{{ item }}"
+    region: "{{ region }}"
+    wait: yes
+  register: natgw
+  retries: 3
+  delay: 3
+  with_items:
+    - "{{ subnet_routing.results.0.subnet.id }}"
+    - "{{ subnet_routing.results.1.subnet.id }}"
+    - "{{ subnet_routing.results.2.subnet.id }}"

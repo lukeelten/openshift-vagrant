@@ -1,0 +1,11 @@
+---
+- name: Create S3 bucket for registry
+  s3_bucket:
+    name: "{{ clusterid }}-registry"
+    policy: "{{ lookup('template', playbook_dir + '/roles/aws/templates/s3_bucket_policy_registry.json', convert_data=False) | string }}"
+    region: "{{ region }}"
+    state: present
+    tags:
+      Clusterid: "{{ clusterid }}"
+  retries: 3
+  delay: 3

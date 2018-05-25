@@ -1,6 +1,5 @@
 ---
-- name: "Create Route53 CNAME record for master public ELBs"
-  no_log: True
+- name: "Create Route53 CNAME record for master public ELB"
   route53:
     command: create
     overwrite: yes
@@ -11,8 +10,7 @@
     value: "{{ elbextmaster.elb.dns_name }}"
     zone: "{{ r53zoneext.result.name }}"
 
-- name: "Create Route53 CNAME record for master private ELBs"
-  no_log: True
+- name: "Create Route53 CNAME record for master private ELB"
   route53:
     command: create
     overwrite: yes

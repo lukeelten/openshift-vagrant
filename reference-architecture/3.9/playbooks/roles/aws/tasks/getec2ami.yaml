@@ -1,32 +1,34 @@
 ---
-- name: Fetch Red Hat Cloud Access ami
-  shell: aws ec2 describe-images \
-    --region "{{ aws_region }}" --owners 309956199498 | \
-    jq -r '.Images[] | [.Name,.ImageId] | @csv' | \
-    sed -e 's/\"//g' | \
-    grep -v Beta | \
-    grep -i Access2-GP2 | \
-    grep -i "{{ rhel_release }}" | \
-    sort | \
-    tail -1
-  args:
-    executable: /bin/bash
-  register: ec2ami
-  changed_when: "'ami-' not in ec2ami.stdout"
+- block:
+    - name: Fetch Red Hat Cloud Access ami
+      shell: aws ec2 describe-images \
+        --region "{{ aws_region }}" --owners 309956199498 | \
+        jq -r '.Images[] | [.Name,.ImageId] | @csv' | \
+        sed -e 's/\"//g' | \
+        grep -v Beta | \
+        grep -i Access2-GP2 | \
+        grep -i "{{ rhel_release }}" | \
+        sort | \
+        tail -1
+      args:
+        executable: /bin/bash
+      register: ec2ami
+      changed_when: "'ami-' not in ec2ami.stdout"
 
-- name: 'NOTICE!  Red Hat Cloud Access machine image not found'
-  vars:
-    notice: |
-         NOTICE!  Red Hat Cloud Access machine image not found!
-         Please verify the process has been completed successfully.
+    - name: 'NOTICE!  Red Hat Cloud Access machine image not found'
+      vars:
+        notice: |
+             NOTICE!  Red Hat Cloud Access machine image not found!
+             Please verify the process has been completed successfully.
 
-         See the following url...
-         https://access.redhat.com/cloude/manager/gold_imports/new
-  debug:
-    msg: "{{ notice.split('\n') }}"
-  when: ec2ami.changed
-  failed_when: "'ami-' not in ec2ami.stdout"
+             See the following url...
+             https://access.redhat.com/cloude/manager/gold_imports/new
+      debug:
+        msg: "{{ notice.split('\n') }}"
+      when: ec2ami.changed
+      failed_when: "'ami-' not in ec2ami.stdout"
 
-- name: 'Set fact: ec2ami'
-  set_fact:
-    ec2ami: "{{ ec2ami.stdout.split(',')[1] }}"
+    - name: 'Set fact: ec2ami'
+      set_fact:
+        ec2ami: "{{ ec2ami.stdout.split(',')[1] }}"
+  when: ec2ami is defined

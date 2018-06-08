@@ -31,4 +31,4 @@
     - name: 'Set fact: ec2ami'
       set_fact:
         ec2ami: "{{ ec2ami.stdout.split(',')[1] }}"
-  when: ec2ami is defined
+  when: ec2ami is not defined

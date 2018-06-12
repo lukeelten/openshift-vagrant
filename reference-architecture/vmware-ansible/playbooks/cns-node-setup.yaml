@@ -2,8 +2,6 @@
 - hosts: storage
   gather_facts: yes
   become: no
-  vars_files:
-  - vars/main.yaml
   roles:
   - rhsm
   - vmware-guest-setup

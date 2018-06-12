@@ -35,4 +35,4 @@
       - "{{ openshift_cloudprovider_vsphere_vm_dns }}"
       dns_suffix: "{{ default_subdomain }}"
       hostname: "{{ hostvars[item].inventory_hostname }}"
-  with_items: "{{ groups['haproxy'] }}"
+  with_items: "{{ groups['lb'] }}"

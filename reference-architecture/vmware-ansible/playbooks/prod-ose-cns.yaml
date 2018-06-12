@@ -3,8 +3,6 @@
   connection: local
   gather_facts: yes
   become: no
-  vars_files:
-  - vars/main.yaml
   roles:
   # Group systems
   - create-vm-cns-prod-ose

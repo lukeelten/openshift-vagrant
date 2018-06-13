@@ -5,15 +5,20 @@
     state: directory
 
 - name: "Stat clusterid SSH key"
-  file:
+  stat:
     path: "~/.ssh/{{ clusterid }}.{{ dns_domain }}"
-    state: file
-  register: sshkeys
-  changed_when: "'absent' in sshkeys.state"
-  failed_when: "'r3dh@t' in sshkeys.state"
+  register: sshkey
 
-- name: "Generate SSH key"
-  command: ssh-keygen -b 2048 -t rsa -f ~/.ssh/{{ clusterid }}.{{ dns_domain }} -q -C user@"{{ dns_domain }}" -N "{{ sshkey_password }}" -q
-  args:
-    creates: "~/.ssh/{{ clusterid }}.{{ dns_domain }}"
-  when: sshkeys.changed
+- name: "{{ 'Generate' if (state is undefined or 'absent' not in state) else 'Terminate' }} clusterid SSH key"
+  shell: "{{ cmd }}"
+  vars:
+    cmd: "{{ \
+    'ssh-keygen -b 2048 -t rsa -f ~/.ssh/' + clusterid + '.' + dns_domain + ' -q -C user@' + dns_domain + ' -N ' + sshkey_password + ' -q' \
+      if (state is undefined or 'absent' not in state) else \
+    'rm -rf ~/.ssh/' + clusterid + '.' + dns_domain + '*'
+    }}"
+  when: "\
+  ( ( state is undefined or 'absent' not in state ) and sshkey.stat.exists == false ) \
+  or \
+  ( ( state is defined and 'absent' in state ) and sshkey.stat.exists == true ) \
+  "

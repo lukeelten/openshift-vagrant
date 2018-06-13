@@ -25,8 +25,8 @@ class LookupModule(LookupBase):
     def run(self, args, inject=None, **kwargs):
         try:
             for a in list(args):
-                if 'id' in a:
-                    id = a['id']
+                if 'id' in a[0]:
+                    id = str(a[0]['id'])
         except Exception as e:
             raise errors.AnsibleError("%s" % (e))
 
@@ -34,5 +34,4 @@ class LookupModule(LookupBase):
             client = boto3.client('route53')
             return(client.get_hosted_zone(Id=id)['DelegationSet']['NameServers'])
         except Exception as e:
-            raise errors.AnsibleError("%s" % (e))# -*- coding: utf-8 -*-
-
+            raise errors.AnsibleError("%s" % (e))

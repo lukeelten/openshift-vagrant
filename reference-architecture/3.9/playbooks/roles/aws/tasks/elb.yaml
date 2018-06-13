@@ -1,5 +1,5 @@
 ---
-- name: Create ELB ( master public )
+- name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} ELB ( master external )"
   ec2_elb_lb:
     cross_az_load_balancing: "yes"
     health_check:
@@ -15,25 +15,26 @@
         load_balancer_port: 443
         instance_protocol: tcp
         instance_port: 443
-    name: "{{ clusterid }}-public-master"
+    name: "{{ clusterid }}-master-external"
     region: "{{ aws_region }}"
     scheme: internet-facing
-    security_group_ids:
-      - "{{ sg.results.0.group_id }}"
-    state: present
-    subnets:
-      - "{{ subnet_public.results.0.subnet.id }}"
-      - "{{ subnet_public.results.1.subnet.id }}"
-      - "{{ subnet_public.results.2.subnet.id }}"
-    tags:
-      name: "{{ clusterid }}-public-master"
-      Clusterid: "{{ clusterid }}"
-    wait: true
+    security_group_names:
+      - "master"
+    state: "{{ state | default('present') }}"
+    subnets: "{{ item.subnets }}"
+    tags: "{{ {'kubernetes.io/cluster/' ~ clusterid: clusterid, 'clusterid': clusterid} }}"
+    wait: yes
   retries: 3
   delay: 3
   register: elbextmaster
+  with_items:
+    - subnets: "{{ [
+        subnet_public.results.0.subnet.id,
+        subnet_public.results.1.subnet.id,
+        subnet_public.results.2.subnet.id
+       ] if (state is undefined or 'absent' not in state) else [] }}"
 
-- name: Create ELB ( master private )
+- name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} ELB ( master internal )"
   ec2_elb_lb:
     cross_az_load_balancing: "yes"
     health_check:
@@ -49,25 +50,26 @@
         load_balancer_port: 443
         instance_protocol: tcp
         instance_port: 443
-    name: "{{ clusterid }}-private-master"
+    name: "{{ clusterid }}-master-internal"
     region: "{{ aws_region }}"
     scheme: internal
-    security_group_ids:
-      - "{{ sg.results.0.group_id }}"
-    state: present
-    subnets:
-      - "{{ subnet_private.results.0.subnet.id }}"
-      - "{{ subnet_private.results.1.subnet.id }}"
-      - "{{ subnet_private.results.2.subnet.id }}"
-    tags:
-      name: "{{ clusterid }}-private-master"
-      Clusterid: "{{ clusterid }}"
-    wait: true
+    security_group_names:
+      - "master"
+    state: "{{ state | default('present') }}"
+    subnets: "{{ item.subnets }}"
+    tags: "{{ {'kubernetes.io/cluster/' ~ clusterid: clusterid, 'clusterid': clusterid} }}"
+    wait: yes
   retries: 3
   delay: 3
   register: elbintmaster
+  with_items:
+    - subnets: "{{ [
+        subnet_private.results.0.subnet.id,
+        subnet_private.results.1.subnet.id,
+        subnet_private.results.2.subnet.id
+       ] if (state is undefined or 'absent' not in state) else [] }}"
 
-- name: Create ELB ( infra public )
+- name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} ELB ( infra public )"
   ec2_elb_lb:
     cross_az_load_balancing: "yes"
     health_check:
@@ -86,20 +88,21 @@
         load_balancer_port: 443
         instance_protocol: tcp
         instance_port: 443
-    name: "{{ clusterid }}-public-infra"
+    name: "{{ clusterid }}-infra"
     region: "{{ aws_region }}"
     scheme: internet-facing
-    security_group_ids:
-      - "{{ sg.results.1.group_id }}"
-    state: present
-    subnets:
-      - "{{ subnet_public.results.0.subnet.id }}"
-      - "{{ subnet_public.results.1.subnet.id }}"
-      - "{{ subnet_public.results.2.subnet.id }}"
-    tags:
-      name: "{{ clusterid }}-public-infra"
-      Clusterid: "{{ clusterid }}"
-    wait: true
+    security_group_names:
+      - "infra"
+    state: "{{ state | default('present') }}"
+    subnets: "{{ item.subnets }}"
+    tags: "{{ {'kubernetes.io/cluster/' ~ clusterid: clusterid, 'clusterid': clusterid} }}"
+    wait: yes
   retries: 3
   delay: 3
   register: elbextinfra
+  with_items:
+    - subnets: "{{ [
+        subnet_public.results.0.subnet.id,
+        subnet_public.results.1.subnet.id,
+        subnet_public.results.2.subnet.id
+       ] if (state is undefined or 'absent' not in state) else [] }}"

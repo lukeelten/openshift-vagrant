@@ -1,40 +1,18 @@
 ---
-- name: Create RouteTable ( Public )
+- name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} RouteTable"
   ec2_vpc_route_table:
+    purge_routes: "{{ 'false' if (state is undefined or 'absent' not in state) else 'true' }}"
+    purge_subnets: "{{ 'false' if (state is undefined or 'absent' not in state) else 'true' }}"
     region: "{{ aws_region }}"
-    subnets:
-      - "{{ subnet_public.results.0.subnet.id }}"
-      - "{{ subnet_public.results.1.subnet.id }}"
-      - "{{ subnet_public.results.2.subnet.id }}"
-    routes:
-      - dest: 0.0.0.0/0
-        gateway_id: "{{ igw.gateway_id }}"
+    state: "{{ state | default('present') }}"
     tags:
-      Name: routing
-    vpc_id: "{{ vpc.vpc.id }}"
+      Name: "{{ item.name }}"
+    vpc_id: "{{ vpc.vpc.id if (state is undefined or 'absent' not in state) else vpc.vpcs[0].vpc_id }}"
   retries: 3
   delay: 3
-
-- name: Create RouteTables ( Private )
-  ec2_vpc_route_table:
-    region: "{{ aws_region }}"
-    subnets:
-      - "{{ item.subnet }}"
-    routes:
-      - dest: 0.0.0.0/0
-        gateway_id: "{{ item.natgw }}"
-    tags:
-      Name: "{{ item.az }}"
-    vpc_id: "{{ vpc.vpc.id }}"
-  retries: 3
-  delay: 5
+  when: ( vpc.vpc is defined ) or ( vpc.vpcs[0] is defined )
   with_items:
-    - az: "{{ vpc_subnet_azs.0 }}"
-      subnet: "{{ subnet_private.results.0.subnet.id }}"
-      natgw: "{{ natgw.results.0.nat_gateway_id }}"
-    - az: "{{ vpc_subnet_azs.1 }}"
-      subnet: "{{ subnet_private.results.1.subnet.id }}"
-      natgw: "{{ natgw.results.1.nat_gateway_id }}"
-    - az: "{{ vpc_subnet_azs.2 }}"
-      subnet: "{{ subnet_private.results.2.subnet.id }}"
-      natgw: "{{ natgw.results.2.nat_gateway_id }}"
+    - name: routing
+    - name: "{{ vpc_subnet_azs.0 }}"
+    - name: "{{ vpc_subnet_azs.1 }}"
+    - name: "{{ vpc_subnet_azs.2 }}"

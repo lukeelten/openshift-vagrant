@@ -1,10 +1,10 @@
 ---
-- name: Create EC2 instances (CNS)
+- name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} EC2 instances ( CNS )"
   ec2:
     assign_public_ip: no
     count_tag:
       Name: "{{ item.name }}"
-    exact_count: 1
+    exact_count: "{{ 1 if (state is undefined or 'absent' not in state) else 0 }}"
     group: [
       "cns",
       "node"
@@ -36,13 +36,13 @@
     wait: yes
   with_items:
     - name: "cns1"
-      subnet: "{{ subnet_private.results.0.subnet.id }}"
+      subnet: "{{ subnet_private.results.0.subnet.id if (state is undefined or 'absent' not in state) else '' }}"
       type: "{{ ec2_type_cns }}"
     - name: "cns2"
-      subnet: "{{ subnet_private.results.1.subnet.id }}"
+      subnet: "{{ subnet_private.results.1.subnet.id if (state is undefined or 'absent' not in state) else '' }}"
       type: "{{ ec2_type_cns }}"
     - name: "cns3"
-      subnet: "{{ subnet_private.results.2.subnet.id }}"
+      subnet: "{{ subnet_private.results.2.subnet.id if (state is undefined or 'absent' not in state) else '' }}"
       type: "{{ ec2_type_cns }}"
   retries: 3
   delay: 3
@@ -53,15 +53,21 @@
     - resource: "{{ item.tagged_instances[0].id }}"
     - tagss: "clusterid={{ clusterid }}, ami={{ ec2ami }}, kubernetes.io/cluster/{{ clusterid }}={{ clusterid }}, host-type=node, sub-host-type=cns"
   with_items: "{{ ec2cns.results }}"
+  when:
+    - ( state is undefined ) or ( 'absent' not in state )
 
 - include_tasks: tag.yaml
   vars:
     - resource: "{{ item.tagged_instances[0].block_device_mapping['/dev/sda1'].volume_id }}"
     - tagss: "Name={{ item.tagged_instances[0].id }}-rootvol, clusterid={{ clusterid }}, "
   with_items: "{{ ec2cns.results }}"
+  when:
+    - ( state is undefined ) or ( 'absent' not in state )
 
 - include_tasks: tag.yaml
   vars:
     - resource: "{{ item.tagged_instances[0].block_device_mapping['/dev/xvdb'].volume_id }}"
     - tagss: "Name={{ item.tagged_instances[0].id }}-xvdb, clusterid={{ clusterid }}, "
   with_items: "{{ ec2cns.results }}"
+  when:
+    - ( state is undefined ) or ( 'absent' not in state )

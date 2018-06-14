@@ -27,3 +27,4 @@ ec2_type_node: "m5.2xlarge"
 ec2_type_cns: "m5.2xlarge"
 
 rhel_release: "rhel-7.5"
+#ec2ami: ami-abc3231a

@@ -9,7 +9,7 @@
   set_fact:
     r53_zones: ['{% for zone in r53_zones.HostedZones -%}
         {%- if zone.Config.PrivateZone == false -%}
-          {%- if clusterid ~ ".sysdeseng.com." in zone.Name -%}
+          {%- if clusterid ~ "." ~ dns_domain ~ "." in zone.Name -%}
             { "Id": "{{ zone.Id | safe }}", "Name": "{{ zone.Name | safe }}" }
           {%- endif -%}
         {%- endif -%}

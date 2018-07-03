@@ -11,7 +11,7 @@ engine_cafile: ../ca.pem
 ##############################################################################
 ### Red Hat Virtualization VM Image
 ## For CentOS 7:
-qcow_url: https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2
+qcow_url: https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2c
 ## For RHEL: Find KVM Guest Image in Downloads -> RHEL on https://access.redhat.com/ and use before the link expires:
 #qcow_url:https://access.cdn.redhat.com//content/origin/files/<omitted>/rhel-server-7.4-x86_64-kvm.qcow2?_auth_=<omitted>
 ## Alternatively, download the above KVM image, and re-host it on a local satellite:

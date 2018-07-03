@@ -16,6 +16,7 @@ template_memory: 8GiB
 template_cpu: 2
 template_disk_storage: "{{ rhv_data_storage }}"
 template_disk_size: 60GiB
+template_operating_system: rhel_7x64
 template_nics:
   - name: nic1
     profile_name: ovirtmgmt
@@ -24,8 +25,7 @@ template_nics:
 ##########################
 # Other top scope vars
 ##########################
-# Centos does not have guest agent...
-#wait_for_ip: false
+wait_for_ip: true
 # See if anything goes wrong...
 debug_vm_create: true
 
@@ -34,6 +34,7 @@ master_vm:
   template: "{{ template_name }}"
   memory: 16GiB
   cores: 2
+  state: running
   high_availability: true
   disks:
     - size: 100GiB
@@ -46,6 +47,7 @@ node_vm:
   template: "{{ template_name }}"
   memory: 8GiB
   cores: 2
+  state: running
   disks:
     - size: 100GiB
       storage_domain: "{{ rhv_data_storage }}"
@@ -64,7 +66,8 @@ install_guest_agent_script: |
       enabled: true
       gpgcheck: false
   packages:
-    - ovirt-guest-agent
+    - ovirt-guest-agent-common
+    - python-ipaddress
   runcmd:
     - systemctl enable ovirt-guest-agent
     - systemctl start ovirt-guest-agent
@@ -72,8 +75,8 @@ install_guest_agent_script: |
 vms:
   # Master VMs
   - name: "openshift-master-0.{{ public_hosted_zone }}"
-    profile: "{{ master_vm }}"
     tag: openshift_master
+    profile: "{{ master_vm }}"
     cloud_init:
       host_name: "openshift-master-0.{{ public_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"

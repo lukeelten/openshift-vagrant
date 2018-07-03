@@ -39,6 +39,7 @@
         - "{{ groups['tag_openshift_infra'] }}"
         - "{{ groups['tag_openshift_node'] }}"
         - "{{ groups['tag_openshift_lb'] }}"
+      when: nsupdate_server is defined
     - name: Append show/send lines
       lineinfile:
         path: ../inventory.nsupdate
@@ -50,16 +51,19 @@
         path: ../inventory.nsupdate
         line: "zone {{public_hosted_zone}}"
         state: present
+      when: nsupdate_server is defined
     - name: Create NSUPDATE wildcard A entry
       lineinfile:
         path: ../inventory.nsupdate
-        line: "update add *.{{app_dns_prefix}}.{{public_hosted_zone}} 86400 A {{lb_ip}}"
+        line: "update add *.{{ openshift_master_default_subdomain }} 86400 A {{lb_ip}}"
         state: present
+      when: nsupdate_server is defined
     - name: Create NSUPDATE public hostname entry
       lineinfile:
         path: ../inventory.nsupdate
         line: "update add {{openshift_master_cluster_public_hostname}} 86400 A {{lb_ip}}"
         state: present
+      when: nsupdate_server is defined
     - name: Create NSUPDATE host A entries
       lineinfile:
         path: ../inventory.nsupdate
@@ -70,6 +74,7 @@
         - "{{ groups['tag_openshift_infra'] }}"
         - "{{ groups['tag_openshift_node'] }}"
         - "{{ groups['tag_openshift_lb'] }}"
+      when: nsupdate_server is defined
     - name: Append show/send lines
       lineinfile:
         path: ../inventory.nsupdate

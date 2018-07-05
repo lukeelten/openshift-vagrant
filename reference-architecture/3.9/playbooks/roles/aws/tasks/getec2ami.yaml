@@ -2,6 +2,7 @@
 - block:
     - name: Fetch Red Hat Cloud Access ami
       shell: aws ec2 describe-images \
+        --ouput=json \
         --region "{{ aws_region }}" --owners 309956199498 | \
         jq -r '.Images[] | [.Name,.ImageId] | @csv' | \
         sed -e 's/\"//g' | \

@@ -26,7 +26,7 @@
       debug:
         msg: "{{ notice.split('\n') }}"
       when: ec2ami_unformatted.changed
-      failed_when: "'ami-' not in ec2ami.stdout"
+      failed_when: ( ec2ami.stdout == "" ) or ( "'ami-' not in ec2ami.stdout" )
 
     - name: 'Set fact: ec2ami'
       set_fact:

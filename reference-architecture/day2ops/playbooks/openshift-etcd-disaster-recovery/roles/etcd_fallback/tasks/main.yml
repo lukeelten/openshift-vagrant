@@ -21,7 +21,7 @@
   when: alive_nodes == '1'
 
 - name: Add the node to the cluster
-  shell: "etcdctl -C https://{{ hostvars[groups['etcd-sec'][0]].ansible_default_ipv4.address }}:2379 --cert-file /etc/etcd/peer.crt --key-file /etc/etcd/peer.key --ca-file /etc/etcd/ca.crt member add {{ ansible_hostname }} https://{{ ansible_default_ipv4.address }}:2380 2>/dev/null | grep '^ETCD_INITIAL_CLUSTER='" 
+  shell: "etcdctl -C https://{{ hostvars[groups['etcd-sec'][0]].ansible_default_ipv4.address }}:2379 --cert-file /etc/etcd/peer.crt --key-file /etc/etcd/peer.key --ca-file /etc/etcd/ca.crt member add {{ ansible_hostname }} https://{{ ansible_default_ipv4.address }}:2380 2>/dev/null | grep '^ETCD_INITIAL_CLUSTER='"
   register: host_addition
   delegate_to: "{{ groups['etcd-sec'][0] }}"
   when: alive_nodes == '1'
@@ -37,7 +37,7 @@
     path: /etc/etcd/etcd.conf
   when: alive_nodes == '1'
 
-- name: Add the configuration lines for ETCD_NAME 
+- name: Add the configuration lines for ETCD_NAME
   lineinfile:
     regexp: '^ETCD_NAME'
     state: present
@@ -52,7 +52,7 @@
     path: /etc/etcd/etcd.conf
   when: alive_nodes == '1'
 
-- name: Add the configuration lines for ETCD_INITIAL_CLUSTER 
+- name: Add the configuration lines for ETCD_INITIAL_CLUSTER
   lineinfile:
     regexp: '^ETCD_INITIAL_CLUSTER'
     state: present
@@ -67,7 +67,7 @@
     path: /etc/etcd/etcd.conf
   when: alive_nodes == '1'
 
-- name: Add the configuration lines for ETCD_INITIAL_CLUSTER_STATE 
+- name: Add the configuration lines for ETCD_INITIAL_CLUSTER_STATE
   lineinfile:
     regexp: '^ETCD_INITIAL_CLUSTER_STATE'
     state: present

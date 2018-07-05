@@ -22,11 +22,7 @@
     template: "{{openshift_cloudprovider_vsphere_template}}"
     state: poweredon
     wait_for_ip_address: True
-<<<<<<< HEAD
     folder: "{{ openshift_cloudprovider_vsphere_datacenter }}/vm/{{ openshift_cloudprovider_vsphere_folder }}"
-=======
-    folder: "{{ openshift_cloudprovider_vsphere_datacenter }}/vm/{{ openshift_cloudprovider_vsphere_folder }}" 
->>>>>>> 97592cf7352c98e4d8873fb7410a7b129e6d175d
     annotation: "{{ item.value.tag }}"
     hardware:
       memory_mb: "{{ app_memory }}"

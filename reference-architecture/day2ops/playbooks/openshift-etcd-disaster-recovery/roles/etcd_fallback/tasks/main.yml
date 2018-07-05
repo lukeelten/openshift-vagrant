@@ -95,4 +95,3 @@
   pause:
     seconds: 5
   when: task_result | changed
-

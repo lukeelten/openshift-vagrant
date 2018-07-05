@@ -58,7 +58,7 @@
     username: "{{ openshift_cloudprovider_vsphere_username }}"
     password: "{{ openshift_cloudprovider_vsphere_password }}"
     validate_certs: False
-    name: "{{ hostvars[item].inventory_hostname }}"
+    name: "{{ hostvars[item].inventory_hostname }}" 
     cluster: "{{ openshift_cloudprovider_vsphere_cluster}}"
     datacenter: "{{ openshift_cloudprovider_vsphere_datacenter }}"
     resource_pool: "{{ openshift_cloudprovider_vsphere_resource_pool }}"
@@ -78,7 +78,7 @@
     - size_gb: 300
       datastore: "{{ openshift_cloudprovider_vsphere_datastore }}"
       type: eagerZeroedThick
-    folder: "{{ openshift_cloudprovider_vsphere_datacenter }}/vm/{{ openshift_cloudprovider_vsphere_folder }}"
+    folder: "{{ openshift_cloudprovider_vsphere_datacenter }}/vm/{{ openshift_cloudprovider_vsphere_folder }}" 
     annotation: "{{ hostvars[item].openshift_node_labels }}"
     hardware:
       memory_mb: 8192
@@ -121,7 +121,7 @@
     - size_gb: 300
       datastore: "{{ openshift_cloudprovider_vsphere_datastore }}"
       type: eagerZeroedThick
-    folder: "{{ openshift_cloudprovider_vsphere_datacenter }}/vm/{{ openshift_cloudprovider_vsphere_folder }}"
+    folder: "{{ openshift_cloudprovider_vsphere_datacenter }}/vm/{{ openshift_cloudprovider_vsphere_folder }}" 
     annotation: "{{ hostvars[item].openshift_node_labels }}"
     hardware:
       memory_mb: "8192"

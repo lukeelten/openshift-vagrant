@@ -164,7 +164,7 @@ def launch_refarch_env(region=None,
       click.echo('\tcontainerized: %s' % containerized)
       click.echo('\tnode_type: %s' % node_type)
       click.echo('\texisting_stack: %s' % existing_stack)
-      click.echo('\topenshit_sdn: %s' % openshift_sdn)
+      click.echo('\topenshift_sdn: %s' % openshift_sdn)
       click.echo('\tSubnets, Security Groups, and IAM Roles will be gather from the CloudFormation')
       click.echo("")
   else:
@@ -333,7 +333,7 @@ def launch_refarch_env(region=None,
 if __name__ == '__main__':
   # check for AWS access info
   if os.getenv('AWS_ACCESS_KEY_ID') is None or os.getenv('AWS_SECRET_ACCESS_KEY') is None:
-    print 'AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY **MUST** be exported as environment variables.'
+    print('AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY **MUST** be exported as environment variables.')
     sys.exit(1)
 
   launch_refarch_env(auto_envvar_prefix='OSE_REFArch')

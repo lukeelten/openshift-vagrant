@@ -24,7 +24,7 @@ import sys
               show_default=True)
 @click.option('--master-instance-type', default='m4.xlarge', help='ec2 instance type',
               show_default=True)
-@click.option('--node-instance-type', default='t2.large', help='ec2 instance type',
+@click.option('--node-instance-type', default='m4.xlarge', help='ec2 instance type',
               show_default=True)
 @click.option('--app-instance-type', default='t2.large', help='ec2 instance type',
               show_default=True)
@@ -372,7 +372,7 @@ def launch_refarch_env(region=None,
 if __name__ == '__main__':
   # check for AWS access info
   if os.getenv('AWS_ACCESS_KEY_ID') is None or os.getenv('AWS_SECRET_ACCESS_KEY') is None:
-    print 'AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY **MUST** be exported as environment variables.'
+    print('AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY **MUST** be exported as environment variables.')
     sys.exit(1)
 
   launch_refarch_env(auto_envvar_prefix='OSE_REFArch')

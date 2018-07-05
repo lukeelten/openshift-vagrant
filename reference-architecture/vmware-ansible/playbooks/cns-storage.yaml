@@ -4,9 +4,3 @@
 
 - include: cns-node-setup.yaml
   tags: [ 'node-setup']
-
-- include: node-setup.yaml
-  tags: [ 'node-setup']
-
-- include: cleanup-cns.yaml
-  tags: ['clean']

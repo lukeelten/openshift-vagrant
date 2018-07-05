@@ -1,3 +1,8 @@
+
+# DEPRECATED
+This code has been deprecated please check the directory https://github.com/openshift/openshift-ansible-contrib/tree/master/reference-architecture/3.9/playbooks and the new reference architecture document 
+https://access.redhat.com/documentation/en-us/reference_architectures/2018/html/deploying_and_managing_openshift_3.9_on_amazon_web_services/
+
 # The Reference Architecture OpenShift on Amazon Web Services
 This repository contains the scripts used to deploy an OpenShift Container Platform or OpenShift Origin environment based off of the Reference Architecture Guide for OCP 3.6 on Amazon Web Services.
 
@@ -25,7 +30,10 @@ $ yum -y install python2-boto \
                  python-six \
                  python2-boto3 \
                  python-click \
-                 python-httplib2
+                 python-httplib2 \
+                 python-passlib \
+                 httpd-tools \
+                 java-1.8.0-openjdk-headless
 ```
 
 ### Deploying OpenShift Origin
@@ -36,7 +44,8 @@ $ rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rp
 $ yum -y install python-pip git python2-boto \
                  python-netaddr python-httplib2 python-devel \
                  gcc libffi-devel openssl-devel python2-boto3 \
-                 python-click python-six pyOpenSSL
+                 python-click python-six python-passlib pyOpenSSL \
+                 httpd-tools java-1.8.0-openjdk-headless
 $ pip install git+https://github.com/ansible/ansible.git@stable-2.3
 $ mkdir -p /usr/share/ansible/openshift-ansible
 $ git clone https://github.com/openshift/openshift-ansible.git /usr/share/ansible/openshift-ansible

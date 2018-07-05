@@ -332,7 +332,7 @@ def launch_refarch_env(region=None,
 if __name__ == '__main__':
   # check for AWS access info
   if os.getenv('AWS_ACCESS_KEY_ID') is None or os.getenv('AWS_SECRET_ACCESS_KEY') is None:
-    print 'AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY **MUST** be exported as environment variables.'
+    print('AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY **MUST** be exported as environment variables.')
     sys.exit(1)
 
   launch_refarch_env(auto_envvar_prefix='OSE_REFArch')

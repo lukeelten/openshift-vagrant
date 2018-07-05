@@ -1,14 +1,4 @@
 ---
-#- name: Assign app memory for container_storage
-#  set_fact:
-#    app_memory: 32768
-#  when: "'cns' in container_storage"
-
-#- name: Assign app memory for container_storage
-#  set_fact:
-#    app_memory: 8192
-#  when:"'cns' not in container_storage"
-
 - name: Create production master node VMs on vCenter
   vmware_guest:
     hostname: "{{ openshift_cloudprovider_vsphere_host }}"

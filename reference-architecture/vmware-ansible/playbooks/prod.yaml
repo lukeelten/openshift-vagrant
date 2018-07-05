@@ -1,14 +1,11 @@
 ---
-- hosts: localhost
-  vars_files:
-    - vars/main.yaml
+- name: Create VMs from inventory file
+  hosts: localhost
   roles:
     - create-vm-prod-ose
 
-- name: fulfill OSE3 prerequisites on production hosts roles
-  hosts: production_group
-  vars_files:
-    - vars/main.yaml
+- name: Prepare VMs for  OSE3 install
+  hosts: nodes
   roles:
     - rhsm
     - vmware-guest-setup
@@ -16,3 +13,8 @@
     - docker-storage-setup
     - openshift-volume-quota
   ignore_errors: yes
+
+- hosts: masters
+  roles:
+    - master-prerequisites
+    - etcd-storage

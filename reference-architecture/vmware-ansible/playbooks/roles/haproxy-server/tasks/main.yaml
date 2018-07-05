@@ -11,7 +11,7 @@
 - name: open firewall for Openshift services
   command: iptables -I INPUT -p tcp --dport {{item}} -j ACCEPT
   with_items:
-    - "{{ console_port }}"
+    - 8443
     - 443
     - 80
 

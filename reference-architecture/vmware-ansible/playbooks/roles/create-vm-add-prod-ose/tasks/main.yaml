@@ -11,31 +11,31 @@
 
 - name: Create additional production VMs on vCenter
   vmware_guest:
-    hostname: "{{ vcenter_host }}"
-    username: "{{ vcenter_username }}"
-    password: "{{ vcenter_password }}"
+    hostname: "{{ openshift_cloudprovider_vsphere_host }}"
+    username: "{{ openshift_cloudprovider_vsphere_username }}"
+    password: "{{ openshift_cloudprovider_vsphere_password }}"
     validate_certs: False
     name: "{{ item.value.guestname }}"
-    cluster: "{{ vcenter_cluster}}"
-    datacenter: "{{ vcenter_datacenter }}"
-    resource_pool: "{{ vcenter_resource_pool }}"
-    template: "{{vcenter_template_name}}"
+    cluster: "{{ openshift_cloudprovider_vsphere_cluster}}"
+    datacenter: "{{ openshift_cloudprovider_vsphere_datacenter }}"
+    resource_pool: "{{ openshift_cloudprovider_vsphere_resource_pool }}"
+    template: "{{openshift_cloudprovider_vsphere_template}}"
     state: poweredon
     wait_for_ip_address: True
-    folder: "/{{ vcenter_folder }}"
+    folder: "{{ openshift_cloudprovider_vsphere_datacenter }}/vm/{{ openshift_cloudprovider_vsphere_folder }}"
     annotation: "{{ item.value.tag }}"
     hardware:
       memory_mb: "{{ app_memory }}"
     networks:
-    - name: "{{ vm_network }}"
+    - name: "{{ openshift_cloudprovider_vsphere_vm_network }}"
       ip: "{{ item.value.ip4addr }}"
-      netmask: "{{ vm_netmask }}"
-      gateway: "{{ vm_gw }}"
+      netmask: "{{ openshift_cloudprovider_vsphere_vm_netmask }}"
+      gateway: "{{ openshift_cloudprovider_vsphere_vm_gateway }}"
     customization:
-      domain: "{{dns_zone}}"
+      domain: "{{default_subdomain}}"
       dns_servers:
-      - "{{ vm_dns }}"
-      dns_suffix: "{{dns_zone}}"
+      - "{{ openshift_cloudprovider_vsphere_vm_dns }}"
+      dns_suffix: "{{default_subdomain}}"
       hostname: "{{ item.value.guestname}}"
   with_dict: "{{host_inventory}}"
   when: "'master' in item.value.guestname or 'app' in item.value.guestname or 'infra' in item.value.guestname"

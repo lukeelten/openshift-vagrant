@@ -1,14 +1,11 @@
 ---
-- hosts: cns
+- hosts: storage
   gather_facts: yes
   become: no
-  vars_files:
-  - vars/main.yaml
   roles:
-  - instance-groups
   - rhsm
   - vmware-guest-setup
+  - cloud-provider-setup
   - docker-storage-setup
   - openshift-volume-quota
   - gluster-ports
-- include: add-node-prerequisite.yaml

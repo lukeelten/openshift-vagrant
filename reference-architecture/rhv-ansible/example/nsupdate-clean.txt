@@ -106,7 +106,7 @@ zone example.com
 update delete *.apps.example.com A
 update delete openshift.example.com A
 update delete master.example.com A
-update delete master.example.com A
+update delete openshift-master.example.com A
 update delete master0.example.com A
 update delete master1.example.com A
 update delete master2.example.com A

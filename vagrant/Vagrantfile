@@ -15,7 +15,7 @@ origin_os = ENV['ORIGIN_OS'] || 'centos'
 rhsm_pool = ENV['RHSM_POOL'] || 'Employee SKU'
 sync_type = ENV['SYNC_TYPE'] || ''
 
-REQUIRED_PLUGINS = %w(vagrant-hostmanager vagrant-sshfs v)
+REQUIRED_PLUGINS = %w(vagrant-hostmanager vagrant-sshfs landrush)
 SUGGESTED_PLUGINS = %w(vagrant-reload)
 
 def message(name)
@@ -181,12 +181,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         openshift_hosted_registry_replicas: 1,
         openshift_hosted_router_selector: 'node-role.kubernetes.io/master=true',
         openshift_hosted_registry_selector: 'node-role.kubernetes.io/master=true',
-#        openshift_hosted_registry_storage_kind: 'nfs',
-#        openshift_hosted_registry_storage_access_modes: ['ReadWriteMany'],
-#        openshift_hosted_registry_storage_host: 'admin1.example.com',
-#        openshift_hosted_registry_storage_nfs_directory: '/srv/nfs',
-#        openshift_hosted_registry_storage_volume_name: 'registry',
-#        openshift_hosted_registry_storage_volume_size: '2Gi',
+        openshift_enable_unsupported_configurations: true, # Needed for NFS registry. For some unknown reason.
+        openshift_hosted_registry_storage_kind: 'nfs',
+        openshift_hosted_registry_storage_access_modes: ['ReadWriteMany'],
+        openshift_hosted_registry_storage_host: 'admin1.example.com',
+        openshift_hosted_registry_storage_nfs_directory: '/srv/nfs',
+        openshift_hosted_registry_storage_volume_name: 'registry',
+        openshift_hosted_registry_storage_volume_size: '2Gi',
         rhsm_user: "#{ENV.fetch('SUB_USERNAME', '')}",
         rhsm_password: "#{ENV.fetch('SUB_PASSWORD', '')}",
         rhsm_pool: rhsm_pool,

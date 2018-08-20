@@ -89,15 +89,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provider "virtualbox" do |v, override|
     #v.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate//vagrant","1"]
-    v.memory = 3072
-    v.cpus = 2
+    v.memory = 2048
+    v.cpus = 1
     override.vm.box = box_name
     provider_name = 'virtualbox'
   end
 
   config.vm.provider "libvirt" do |libvirt, override|
-    libvirt.cpus = 2
-    libvirt.memory = 3072
+    libvirt.cpus = 1
+    libvirt.memory = 2018
     libvirt.driver = 'kvm'
     override.vm.box = box_name
     provider_name = 'libvirt'
@@ -141,16 +141,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         ansible_ssh_user: 'vagrant',
         deployment_type: deployment_type,
         openshift_deployment_type: deployment_type,
-        openshift_release: 'v3.9',
+        openshift_release: 'v3.10',
+        openshift_clock_enabled: true,
+        os_firewall_use_firewalld: true,
         ansible_service_broker_install: false,
         template_service_broker_install: false,
-        openshift_master_identity_providers: "[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]",
+        openshift_master_identity_providers: "[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'file': '/etc/origin/master/htpasswd'}]",
         openshift_master_htpasswd_users: "{'admin': '$apr1$nWG7vwhy$jCMCBmBrW3MEYmCFCckYk1'}",
         openshift_master_default_subdomain: 'apps.example.com',
         openshift_disable_check: "docker_storage,memory_availability,package_version",
-        osm_default_node_selector: 'region=primary',
-        openshift_hosted_registry_selector: 'region=infra',
         openshift_hosted_registry_replicas: 1,
+        openshift_hosted_router_selector: 'node-role.kubernetes.io/master=true',
+        openshift_hosted_registry_selector: 'node-role.kubernetes.io/master=true',
 #        openshift_hosted_registry_storage_kind: 'nfs',
 #        openshift_hosted_registry_storage_access_modes: ['ReadWriteMany'],
 #        openshift_hosted_registry_storage_host: 'admin1.example.com',
@@ -170,33 +172,24 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ansible_host_vars = {
       master1:  {
         openshift_ip: '192.168.50.20',
-        openshift_node_labels: quote_labels(
-          region: 'infra',
-          zone: 'default',
-        ),
         openshift_schedulable: true,
         ansible_host: '192.168.50.20',
-        ansible_ssh_private_key_file: "/home/vagrant/.ssh/master1.key"
+        ansible_ssh_private_key_file: "/home/vagrant/.ssh/master1.key",
+        openshift_node_group_name: "node-config-master"
       },
       node1: {
         openshift_ip: '192.168.50.21',
-        openshift_node_labels: quote_labels(
-          region: 'primary',
-          zone: 'east',
-        ),
         openshift_schedulable: true,
         ansible_host: '192.168.50.21',
-        ansible_ssh_private_key_file: "/home/vagrant/.ssh/node1.key"
+        ansible_ssh_private_key_file: "/home/vagrant/.ssh/node1.key",
+        openshift_node_group_name: "node-config-compute"
       },
       node2: {
         openshift_ip: '192.168.50.22',
-        openshift_node_labels: quote_labels(
-          region: 'primary',
-          zone: 'west',
-        ),
         openshift_schedulable: true,
         ansible_host: '192.168.50.22',
-        ansible_ssh_private_key_file: "/home/vagrant/.ssh/node2.key"
+        ansible_ssh_private_key_file: "/home/vagrant/.ssh/node2.key",
+        openshift_node_group_name: "node-config-compute"
       },
       admin1: {
         ansible_connection: 'local',
@@ -230,6 +223,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       ansible.limit          = "OSEv3:localhost"
       ansible.provisioning_path = '/home/vagrant/sync/vagrant'
       ansible.playbook = "/home/vagrant/openshift-ansible/playbooks/deploy_cluster.yml"
+      ansible.groups = ansible_groups
+      ansible.host_vars = ansible_host_vars
+    end
+
+    admin1.vm.provision :ansible_local do |ansible|
+      ansible.verbose        = true
+      ansible.install        = false
+      ansible.limit          = "OSEv3:localhost"
+      ansible.provisioning_path = '/home/vagrant/sync/vagrant'
+      ansible.playbook = "/home/vagrant/sync/vagrant/tasks/post-install.yaml"
       ansible.groups = ansible_groups
       ansible.host_vars = ansible_host_vars
     end

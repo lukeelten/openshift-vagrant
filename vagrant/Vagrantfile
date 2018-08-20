@@ -15,18 +15,14 @@ origin_os = ENV['ORIGIN_OS'] || 'centos'
 rhsm_pool = ENV['RHSM_POOL'] || 'Employee SKU'
 sync_type = ENV['SYNC_TYPE'] || ''
 
-REQUIRED_PLUGINS = %w(vagrant-hostmanager)
-SUGGESTED_PLUGINS = %w(vagrant-sshfs landrush)
+REQUIRED_PLUGINS = %w(vagrant-hostmanager vagrant-sshfs v)
+SUGGESTED_PLUGINS = %w(vagrant-reload)
 
 def message(name)
   "#{name} plugin is not installed, run `vagrant plugin install #{name}` to install it."
 end
 
 SUGGESTED_PLUGINS.each { |plugin| print("note: " + message(plugin) + "\n") unless Vagrant.has_plugin?(plugin) }
-
-if deployment_type == 'openshift-enterprise'
-  REQUIRED_PLUGINS.push('vagrant-registration')
-end
 
 errors = []
 
@@ -111,18 +107,42 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     master1.vm.network :private_network, ip: "#{NETWORK_BASE}.#{INTEGRATION_START_SEGMENT}"
     master1.vm.hostname = "master1.example.com"
     master1.hostmanager.aliases = %w(master1)
+
+    master1.vm.provision "shell", inline: <<-SHELL
+      echo "deltarpm_percentage=0" >> /etc/yum.conf
+      yum -y update
+    SHELL
+    if Vagrant.has_plugin?('vagrant-reload')
+      master1.vm.provision :reload
+    end
   end
 
   config.vm.define "node1" do |node1|
     node1.vm.network :private_network, ip: "#{NETWORK_BASE}.#{INTEGRATION_START_SEGMENT + 1}"
     node1.vm.hostname = "node1.example.com"
     node1.hostmanager.aliases = %w(node1)
+
+    node1.vm.provision "shell", inline: <<-SHELL
+      echo "deltarpm_percentage=0" >> /etc/yum.conf
+      yum -y update
+    SHELL
+    if Vagrant.has_plugin?('vagrant-reload')
+      node1.vm.provision :reload
+    end
   end
 
   config.vm.define "node2" do |node2|
     node2.vm.network :private_network, ip: "#{NETWORK_BASE}.#{INTEGRATION_START_SEGMENT + 2}"
     node2.vm.hostname = "node2.example.com"
     node2.hostmanager.aliases = %w(node2)
+
+    node2.vm.provision "shell", inline: <<-SHELL
+      echo "deltarpm_percentage=0" >> /etc/yum.conf
+      yum -y update
+    SHELL
+    if Vagrant.has_plugin?('vagrant-reload')
+      node2.vm.provision :reload
+    end
   end
 
   config.vm.define "admin1" do |admin1|
@@ -132,6 +152,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     admin1.vm.synced_folder "..", "/home/vagrant/sync", type: sync_type
     admin1.vm.synced_folder ".vagrant", "/home/vagrant/.hidden", type: sync_type
+
+    admin1.vm.provision "shell", inline: <<-SHELL
+      echo "deltarpm_percentage=0" >> /etc/yum.conf
+      yum -y update
+    SHELL
+    if Vagrant.has_plugin?('vagrant-reload')
+      admin1.vm.provision :reload
+    end
 
     ansible_groups = {
       OSEv3: ["master1", "node1", "node2"],

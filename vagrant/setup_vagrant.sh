@@ -1,4 +1,4 @@
 #!/bin/bash
 
-vagrant plugin update
-vagrant plugin install landrush vagrant-hostmanager vagrant-sshfs
+( cd ~ ; vagrant plugin update )
+( cd ~ ; vagrant plugin install landrush vagrant-hostmanager vagrant-sshfs vagrant-reload )

@@ -1,0 +1,8 @@
+---
+- name: Set cluster admin
+  become: yes
+  become_user: vagrant
+  host: masters[0]
+  tasks:
+    - name: Add cluster admin role to admin user
+      command: oc adm policy add-cluster-role-to-user cluster-admin admin

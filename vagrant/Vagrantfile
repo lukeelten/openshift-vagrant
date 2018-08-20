@@ -84,20 +84,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.landrush.guest_redirect_dns = false
   end
 
-  if deployment_type == 'openshift-enterprise'
-    # vagrant-registration
-    if ENV.has_key?('SUB_USERNAME') && ENV.has_key?('SUB_PASSWORD')
-      config.registration.username = ENV['SUB_USERNAME']
-      config.registration.password = ENV['SUB_PASSWORD']
-    end
-
-    # Proxy Information from environment
-    config.registration.proxy = PROXY = (ENV['PROXY'] || '')
-    config.registration.proxyUser = PROXY_USER = (ENV['PROXY_USER'] || '')
-    config.registration.proxyPassword = PROXY_PASSWORD = (ENV['PROXY_PASSWORD'] || '')
-    config.registration.auto_attach = true
-  end
-
   # Configure eth0 via script, will disable NetworkManager and enable legacy network daemon:
   config.vm.provision "shell", path: "provision/setup.sh", args: [NETWORK_BASE]
 

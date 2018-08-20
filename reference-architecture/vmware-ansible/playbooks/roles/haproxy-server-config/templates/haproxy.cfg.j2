@@ -41,7 +41,7 @@ frontend  main *:80
 backend router80
     balance source
     mode tcp
-    {% for host in groups['infra'] %}
+    {% for host in groups['infras'] %}
     server {{ hostvars[host]['ansible_fqdn'] }} {{ hostvars[host]['ansible_fqdn'] }}:80 check
     {% endfor %}
 
@@ -51,16 +51,16 @@ frontend  main *:443
 backend router443
     balance source
     mode tcp
-    {% for host in groups['infra'] %}
+    {% for host in groups['infras'] %}
     server {{ hostvars[host]['ansible_fqdn'] }} {{ hostvars[host]['ansible_fqdn'] }}:443 check
     {% endfor %}
 
-frontend  main *:{{ console_port }}
-    default_backend             mgmt{{ console_port }}
+frontend  main *:8443
+    default_backend             mgmt8443
 
-backend mgmt{{ console_port }}
+backend mgmt8443
     balance source
     mode tcp
-    {% for host in groups['master'] %}
-    server {{ hostvars[host]['ansible_fqdn'] }} {{ hostvars[host]['ansible_fqdn'] }}:{{ console_port }} check
+    {% for host in groups['masters'] %}
+    server {{ hostvars[host]['ansible_fqdn'] }} {{ hostvars[host]['ansible_fqdn'] }}:8443 check
     {% endfor %}

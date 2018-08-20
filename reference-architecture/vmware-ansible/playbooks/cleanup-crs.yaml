@@ -35,11 +35,11 @@
   tasks:
     - name: Delete crs VMs
       vmware_guest:
-        hostname: "{{ vcenter_host }}"
-        username: "{{ vcenter_username }}"
-        password: "{{ vcenter_password }}"
-        datacenter: "{{ vcenter_datacenter }}"
-        folder: "/{{ vcenter_folder }}"
+        hostname: "{{ openshift_cloudprovider_vsphere_host }}"
+        username: "{{ openshift_cloudprovider_vsphere_username }}"
+        password: "{{ openshift_cloudprovider_vsphere_password }}"
+        datacenter: "{{ openshift_cloudprovider_vsphere_datacenter }}"
+        folder: "/{{ openshift_cloudprovider_vsphere_folder }}"
         name: "{{ item.value.guestname }}"
         state: absent
         force: true

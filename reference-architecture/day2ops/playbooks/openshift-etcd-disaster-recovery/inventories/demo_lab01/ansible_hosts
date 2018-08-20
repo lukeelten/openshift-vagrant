@@ -1,0 +1,11 @@
+[etcd]
+stretch-master-0.stretch.e2e.bos.redhat.com
+stretch-master-1.stretch.e2e.bos.redhat.com
+stretch-master-2.stretch.e2e.bos.redhat.com
+
+[etcd-pri]
+stretch-master-0.stretch.e2e.bos.redhat.com
+stretch-master-1.stretch.e2e.bos.redhat.com
+
+[etcd-sec]
+stretch-master-2.stretch.e2e.bos.redhat.com

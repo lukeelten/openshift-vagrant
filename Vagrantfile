@@ -11,7 +11,7 @@ puts %Q{ This machine has the IP '#{localmachineip} and host name '#{hostname}'}
 VAGRANTFILE_API_VERSION = '2'
 
 deployment_type = 'origin'
-origin_os = ENV['ORIGIN_OS'] || 'centos'
+box_name = 'centos/7'
 
 REQUIRED_PLUGINS = %w(vagrant-hostmanager vagrant-sshfs landrush)
 SUGGESTED_PLUGINS = %w(vagrant-reload)
@@ -31,14 +31,6 @@ unless errors.empty?
   fail Vagrant::Errors::VagrantError.new, msg
 end
 
-
-
-override_box_url = ''
-if origin_os == 'centos'
-  box_name = 'centos/7'
-else
-  box_name = 'fedora/28-cloud-base'
-end
 
 NETWORK_BASE = '192.168.50'
 INTEGRATION_START_SEGMENT = 20

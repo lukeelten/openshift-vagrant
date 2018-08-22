@@ -1,8 +1,0 @@
----
-- name: Simulate DR for ETCD
-  hosts: etcd-pri
-  tasks:
-    - name: Stop the etcd services from primary DC
-      systemd:
-        name: 'etcd'
-        state: stopped

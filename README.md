@@ -1,61 +1,61 @@
-# OpenShift and Atomic Platform Ansible Contrib
-
-[![Build
-Status](https://travis-ci.org/openshift/openshift-ansible-contrib.svg?branch=master)](https://travis-ci.org/openshift/openshift-ansible-contrib)
-
-This repository contains *unsupported* code that can be used in conjunction with the
-[openshift-ansible](https://github.com/openshift/openshift-ansible) repository, namely:
-- additional [roles](https://github.com/openshift/openshift-ansible-contrib/tree/master/roles) for OpenShift deployment
-- code for provisioning various cloud providers ([GCP](https://github.com/openshift/openshift-ansible-contrib/tree/master/reference-architecture/gcp), [AWS](https://github.com/openshift/openshift-ansible-contrib/tree/master/reference-architecture/aws-ansible), [VMware](https://github.com/openshift/openshift-ansible-contrib/tree/master/reference-architecture/vmware-ansible), [Azure](https://github.com/openshift/openshift-ansible-contrib/tree/master/reference-architecture/azure-ansible), [OpenStack](https://github.com/openshift/openshift-ansible-contrib/tree/master/playbooks/provisioning/openstack) and [Red Hat Virtualization (RHV) / oVirt](https://github.com/openshift/openshift-ansible-contrib/tree/master/reference-architecture/rhv-ansible))
-- supporting scripts and playbooks for the various [reference architectures](https://github.com/openshift/openshift-ansible-contrib/tree/master/reference-architecture) Red Hat has published
-
-**NOTE: Some repositories containing scripts and ansible playbooks are
-deprecated.**
-
-## Contributing
-
-If you're submitting a pull request or doing a code review, please
-take a look at our [contributing guide](./CONTRIBUTING.md).
-
-## Running tests locally
-We use [tox](http://readthedocs.org/docs/tox/) to manage virtualenvs and run
-tests. Alternatively, tests can be run using
-[detox](https://pypi.python.org/pypi/detox/) which allows for running tests in
-parallel
+# Notice
+This repository has been forked from (openshift/openshift-ansible-contrib)[https://github.com/openshift/openshift-ansible-contrib/tree/master/vagrant].
 
 
-```
-pip install tox detox
+# Overview
+This is a Vagrant based project that demonstrates an advanced Openshift Origin 3.10 installation process using an Ansible playbook.
+
+
+
+## Prerequisites
+
+* Vagrant
+* VirtualBox or Libvirt (--provider=libvirt)
+
+
+Install the following vagrant plugins:
+* landrush
+* vagrant-hostmanager
+* vagrant-sshfs
+* vagrant-reload (optional)
+
+
+
+The OS for the origin install defaults to centos but can be overridden by the following environment variable
+
+    export ORIGIN_OS=<desired OS>
+
+## Installation
+
+```bash
+./install_plugins.sh
+vagrant up
 ```
 
-List the test environments available:
-```
-tox -l
+Two ansible playbooks will start on admin1 after it has booted. The first playbook bootstraps the pre-requisites for the Openshift install. The second playbook is the actual Openshift install. The inventory for the Openshift install is declared inline in the Vagrantfile.
+
+The install comprises one master and two nodes. The NFS share gets created on admin1.
+
+
+## Login to your cluster
+
+```bash
+oc login https://master1.example.com:8443 -u admin -p admin123
 ```
 
-Run all of the tests with:
-```
-tox
-```
+Login to the web console on https://master1.example.com:8443 with user "admin" and password "admin123".
 
-Run all of the tests in parallel with detox:
-```
-detox
-```
 
-Running a particular test environment (python 2.7 flake8 tests in this case):
-```
-tox -e py27-ansible22-flake8
-```
+## Troubleshooting
+The landrush plugin creates a small DNS server to that the guest VMs can resolve each others hostnames and also the host can resolve the guest VMs hostnames. The landrush DNS server is listens on 127.0.0.1 on port 10053. It uses a dnsmasq process to redirect dns traffic to landrush. If this isn't working verify that:
 
-Running a particular test environment in a clean virtualenv (python 3.5 yamllint
-tests in this case):
-```
-tox -r -e py35-ansible22-yamllint
-```
+    cat /etc/dnsmasq.d/vagrant-landrush
 
-If you want to enter the virtualenv created by tox to do additional
-testing/debugging (py27-flake8 env in this case):
-```
-source .tox/py27-ansible22-flake8/bin/activate
-```
+gives
+
+    server=/example.com/127.0.0.1#10053
+
+and that /etc/resolv.conf has an entry
+
+    # Added by landrush, a vagrant plugin
+    nameserver 127.0.0.1

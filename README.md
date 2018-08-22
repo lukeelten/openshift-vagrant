@@ -1,8 +1,7 @@
 # Notice
 This repository has been forked from (openshift/openshift-ansible-contrib)[https://github.com/openshift/openshift-ansible-contrib/tree/master/vagrant].
 
-
-# Overview
+# OpenShift Vagrant 
 This is a Vagrant based project that demonstrates an advanced Openshift Origin 3.10 installation process using an Ansible playbook.
 
 

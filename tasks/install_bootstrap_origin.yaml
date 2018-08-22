@@ -8,7 +8,7 @@
     force: yes
     update: yes
     recursive: yes
-    version: openshift-ansible-3.10.32-1
+    version: openshift-ansible-3.10.34-1
   become: yes
   become_user: vagrant
 - package:
@@ -23,14 +23,6 @@
     enablerepo: epel
     state: present
   when: "{{ ansible_distribution != 'Fedora' }}"
-  with_items:
-  - ansible
-  - pyOpenSSL
-- dnf:
-    name: "{{ item }}"
-    enablerepo: epel
-    state: present
-  when: "{{ ansible_distribution == 'Fedora' }}"
   with_items:
   - ansible
   - pyOpenSSL

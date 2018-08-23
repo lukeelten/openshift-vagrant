@@ -12,6 +12,17 @@ VAGRANTFILE_API_VERSION = '2'
 
 deployment_type = 'origin'
 box_name = 'centos/7'
+crio_env =  ENV['OKD_ENABLE_CRIO'] || false
+
+enable_crio = false
+enforce_cio = false
+if crio_env == "force"
+  enable_crio = true
+  enforce_cio = true
+elsif crio_env
+  enable_crio = true
+end
+
 
 REQUIRED_PLUGINS = %w(vagrant-hostmanager vagrant-sshfs landrush)
 SUGGESTED_PLUGINS = %w(vagrant-reload)
@@ -165,7 +176,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         openshift_hosted_registry_storage_host: 'admin1.example.com',
         openshift_hosted_registry_storage_nfs_directory: '/srv/nfs',
         openshift_hosted_registry_storage_volume_name: 'registry',
-        openshift_hosted_registry_storage_volume_size: '2Gi'
+        openshift_hosted_registry_storage_volume_size: '2Gi',
+        openshift_use_crio: enable_crio,
+        openshift_use_crio_only: enforce_cio
       },
       etcd: ["master1"],
       nfs: ["admin1"],

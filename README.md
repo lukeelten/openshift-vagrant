@@ -7,6 +7,16 @@ If you want to install OpenShift Container Platform (with a valid RedHat subscri
 
 ## Prerequisites
 
+System Requirements:
+* CPU with 4-cores (or virtual cores)
+* Minimal 12GB Memory (Each VM uses 2GB memory)
+
+*Each VM requires at least 2GB memory.*
+Reducing the memory settings will result in installation fail (the ansible installer fails for random reasons).
+Nevertheless, it is possible and recommended to increase the memory settings to 4GB when there is sufficient memory installed.
+
+
+Software Requirements:
 * Vagrant
 * VirtualBox or Libvirt (--provider=libvirt)
 

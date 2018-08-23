@@ -8,7 +8,7 @@
     force: yes
     update: yes
     recursive: yes
-    version: openshift-ansible-3.10.34-1
+    version: openshift-ansible-3.10.35-1
   become: yes
   become_user: vagrant
 - package:

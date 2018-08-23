@@ -69,7 +69,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provider "libvirt" do |libvirt, override|
     libvirt.cpus = 1
-    libvirt.memory = 2018
+    libvirt.memory = 2048
     libvirt.driver = 'kvm'
     override.vm.box = box_name
     provider_name = 'libvirt'

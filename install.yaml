@@ -12,7 +12,13 @@
       state: link
     with_items: "{{ private_keys.stdout_lines }}"
 
-- name: Boostrap Host
+- name: Boostrap Admin Host
   hosts: admin1
   tasks:
   - include: tasks/install_bootstrap_origin.yaml
+- name: Add OpenShift Origin repository
+  hosts: all
+  tasks:
+  - yum:
+      name: "centos-release-openshift-origin310"
+      state: present

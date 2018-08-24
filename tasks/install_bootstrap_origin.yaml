@@ -22,7 +22,6 @@
     name: "{{ item }}"
     enablerepo: epel
     state: present
-  when: "{{ ansible_distribution != 'Fedora' }}"
   with_items:
   - ansible
   - pyOpenSSL

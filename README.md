@@ -52,10 +52,10 @@ The install comprises one master and two nodes. The NFS share gets created on ad
 ### Technology Preview: CRI-O
 To enable the cri-o container runtime which is currently in technology preview use:
 ```bash
-# Install CRI-O along with default docker runtime
+# Install CRI-O along with docker runtime
 export OKD_ENABLE_CRIO=1
-# Enforce use of CRI-O only
-export OKD_ENABLE_CRIO="force"
+# or
+OKD_ENABLE_CRIO=1 vagrant up
 ```
 
 

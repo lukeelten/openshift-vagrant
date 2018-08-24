@@ -54,6 +54,7 @@ To enable the cri-o container runtime which is currently in technology preview u
 ```bash
 # Install CRI-O along with docker runtime
 export OKD_ENABLE_CRIO=1
+vagrant up
 # or
 OKD_ENABLE_CRIO=1 vagrant up
 ```

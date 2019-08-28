@@ -11,14 +11,42 @@
       dest: "/home/vagrant/.ssh/{{ item | regex_replace('^.*/machines/([^/]*)/.*', '\\1') }}.key"
       state: link
     with_items: "{{ private_keys.stdout_lines }}"
-
+- name: Update and install packages
+  hosts: all
+  tasks:
+  - yum:
+      name: "centos-release-openshift-origin311"
+      state: present
+  - yum:
+      name: "epel-release"
+      state: present
+  - yum:
+      name: '*'
+      state: latest
+  - yum:
+      name:
+      - rng-tools
+      - bind-utils
+      - NetworkManager
+      - firewalld
+      - nano
+      enablerepo: epel
+      state: present
+- name: Start and Enable service
+  hosts: all
+  tasks:
+  - systemd:
+      daemon_reload: yes
+  - systemd:
+      name: "{{ item }}"
+      enabled: yes
+      state: started
+    with_items:
+    - firewalld
+    - NetworkManager
+    - rngd
 - name: Boostrap Admin Host
   hosts: admin1
   tasks:
   - include: tasks/install_bootstrap_origin.yaml
-- name: Add OpenShift Origin repository
-  hosts: all
-  tasks:
-  - yum:
-      name: "centos-release-openshift-origin310"
-      state: present
+

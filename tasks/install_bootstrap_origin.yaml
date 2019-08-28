@@ -14,14 +14,23 @@
 - package:
     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     state: present
-- replace:
-    dest: /etc/yum.repos.d/epel.repo
-    regexp: '^enabled=1'
-    replace: 'enabled=0'
 - yum:
-    name: "{{ item }}"
+    name:
+#   - ansible
+    - origin-clients
+    - python2-passlib
+    - python-passlib
+    - python-cryptography
+    - python-lxml
+    - python2-pip
+    - python-devel
+    - gcc
+    - openssl-devel
+    - java-1.8.0-openjdk-headless
     enablerepo: epel
     state: present
-  with_items:
-  - ansible
-  - pyOpenSSL
+- shell: 'sudo pip install -r requirements.txt'
+  args:
+    chdir: ~/openshift-ansible
+  become: yes
+  become_user: vagrant

@@ -151,7 +151,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       'OSEv3:vars': {
         ansible_become: true,
         ansible_ssh_user: 'vagrant',
-        ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+        ansible_ssh_common_args: '-o StrictHostKeyChecking=no',
         deployment_type: deployment_type,
         openshift_deployment_type: deployment_type,
         openshift_release: 'v3.11',
@@ -160,9 +160,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         ansible_service_broker_install: false,
         template_service_broker_install: false,
         openshift_enable_service_catalog: false,
+        openshift_master_cluster_method: 'native',
         osm_use_cockpit: false,
-        openshift_is_atomic: false,m,
-        openshift_master_identity_providers: "[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider']",
+        openshift_is_atomic: false,
+        openshift_master_identity_providers: "[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]",
         # admin - OriginAdmin
         # user - OriginUser
         openshift_master_htpasswd_users: "{'admin': '$apr1$zgSjCrLt$1KSuj66CggeWSv.D.BXOA1', 'user': '$apr1$.gw8w9i1$ln9bfTRiD6OwuNTG5LvW50'}",
@@ -189,6 +190,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       master1:  {
         openshift_ip: '192.168.50.20',
         openshift_schedulable: true,
+        etcd_ip: '192.168.50.20',
         ansible_host: '192.168.50.20',
         ansible_ssh_private_key_file: "/home/vagrant/.ssh/master1.key",
         openshift_node_group_name: "node-config-master-infra",

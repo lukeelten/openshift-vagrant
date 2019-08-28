@@ -151,28 +151,33 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       'OSEv3:vars': {
         ansible_become: true,
         ansible_ssh_user: 'vagrant',
+        ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
         deployment_type: deployment_type,
         openshift_deployment_type: deployment_type,
-        openshift_release: 'v3.10',
+        openshift_release: 'v3.11',
         openshift_clock_enabled: true,
         os_firewall_use_firewalld: true,
         ansible_service_broker_install: false,
         template_service_broker_install: false,
-        openshift_master_identity_providers: "[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'file': '/etc/origin/master/htpasswd'}]",
-        openshift_master_htpasswd_users: "{'admin': '$apr1$nWG7vwhy$jCMCBmBrW3MEYmCFCckYk1'}",
+        openshift_enable_service_catalog: false,
+        osm_use_cockpit: false,
+        openshift_is_atomic: false,m,
+        openshift_master_identity_providers: "[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider']",
+        # admin - OriginAdmin
+        # user - OriginUser
+        openshift_master_htpasswd_users: "{'admin': '$apr1$zgSjCrLt$1KSuj66CggeWSv.D.BXOA1', 'user': '$apr1$.gw8w9i1$ln9bfTRiD6OwuNTG5LvW50'}",
         openshift_master_default_subdomain: 'apps.example.com',
         openshift_disable_check: "docker_storage,memory_availability,package_version",
         openshift_hosted_registry_replicas: 1,
-        openshift_hosted_router_selector: 'node-role.kubernetes.io/master=true',
-        openshift_hosted_registry_selector: 'node-role.kubernetes.io/master=true',
-        openshift_enable_unsupported_configurations: true, # Needed for NFS registry. For some unknown reason.
+        openshift_enable_unsupported_configurations: true, # NFS is unsupported. Need this to override. DO NOT USE IN PRODUCTION
         openshift_hosted_registry_storage_kind: 'nfs',
         openshift_hosted_registry_storage_access_modes: ['ReadWriteMany'],
         openshift_hosted_registry_storage_host: 'admin1.example.com',
         openshift_hosted_registry_storage_nfs_directory: '/srv/nfs',
         openshift_hosted_registry_storage_volume_name: 'registry',
         openshift_hosted_registry_storage_volume_size: '2Gi',
-        openshift_use_crio: enable_crio
+        openshift_metrics_install_metrics: true,
+        openshift_logging_install_logging: false
       },
       etcd: ["master1"],
       nfs: ["admin1"],
@@ -186,7 +191,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         openshift_schedulable: true,
         ansible_host: '192.168.50.20',
         ansible_ssh_private_key_file: "/home/vagrant/.ssh/master1.key",
-        openshift_node_group_name: "node-config-master"
+        openshift_node_group_name: "node-config-master-infra",
       },
       node1: {
         openshift_ip: '192.168.50.21',
